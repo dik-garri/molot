@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Все наклейки — Вкусите и увидите</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Manrope:wght@600;700&family=Unbounded:wght@600;700&family=Golos+Text:wght@500;600&family=PT+Serif:ital,wght@0,400;0,700;1,400&family=Yeseva+One&display=swap" rel="stylesheet">
+<style>
+  body{margin:0;background:#8d8a7a;font-family:sans-serif}
+  .row{display:flex;gap:18px;padding:18px;flex-wrap:wrap}
+  .row svg{width:300px;height:400px;display:block;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+</style></head><body>
+<div id="out"></div>
+<script src="vendor/qrcode.js"></script><script src="js/data.js"></script><script src="js/stickers.js"></script>
+<script>
+document.fonts.ready.then(()=>{});
+const out=document.getElementById('out');
+for(const st of STICKER_STYLES){const r=document.createElement('div');r.className='row';r.innerHTML=THEMES.slice(0,5).map(t=>st.render(t)).join('');out.appendChild(r);}
+</script></body></html>
