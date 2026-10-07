@@ -507,10 +507,288 @@
     return svg(s, `Наклейка «Гравюра», день ${d}: ${th.topic}`);
   }
 
+  /* ─────────────────────────── D. ВИТРАЖ (стрельчатое окно, цветное стекло) ─────────────────────────── */
+
+  const LEAD = "#1B1511";
+  const WIN = "M14,272 V122 Q14,44 150,14 Q286,44 286,122 V272 Z";
+  const gP = (d, fill, extra = "") => `<path d="${d}" fill="${fill}" stroke="${LEAD}" stroke-width="3" stroke-linejoin="round" ${extra}/>`;
+  const gE = (cx, cy, rx, ry, fill) => `<ellipse cx="${f(cx)}" cy="${f(cy)}" rx="${f(rx)}" ry="${f(ry)}" fill="${fill}" stroke="${LEAD}" stroke-width="3"/>`;
+  const gC = (cx, cy, r, fill, sw = 3) => `<circle cx="${f(cx)}" cy="${f(cy)}" r="${f(r)}" fill="${fill}" stroke="${LEAD}" stroke-width="${sw}"/>`;
+  const gS = (d, w, c) => `<path d="${d}" fill="none" stroke="${LEAD}" stroke-width="${f(w + 5)}" stroke-linecap="round"/><path d="${d}" fill="none" stroke="${c}" stroke-width="${f(w)}" stroke-linecap="round"/>`;
+  const gL = d => `<path d="${d}" fill="none" stroke="${LEAD}" stroke-width="2.6" stroke-linecap="round"/>`;
+  const poly = pts => "M" + pts.map(p => `${f(p[0])},${f(p[1])}`).join(" L") + "Z";
+
+  // фон окна: лучи × кольца, каждый кусок — отдельное стекло
+  function glassRays(cx, cy, n, rings, pal, seedN, rot = 0) {
+    const R = rng(seedN);
+    let s = "";
+    for (let j = 0; j < rings.length - 1; j++)
+      for (let i = 0; i < n; i++) {
+        const a0 = (rot + i * 360 / n) * Math.PI / 180, a1 = (rot + (i + 1) * 360 / n) * Math.PI / 180;
+        const pt = (a, r) => [cx + Math.cos(a) * r, cy + Math.sin(a) * r];
+        const r0 = rings[j], r1 = rings[j + 1];
+        const pts = r0 === 0 ? [[cx, cy], pt(a0, r1), pt(a1, r1)] : [pt(a0, r0), pt(a0, r1), pt(a1, r1), pt(a1, r0)];
+        const row = pal[Math.min(j, pal.length - 1)];
+        s += gP(poly(pts), row[(i + (R() < 0.3 ? 1 : 0)) % row.length]);
+      }
+    return s;
+  }
+
+  function glassCup(x, y, w, cup, coffee, o = {}) {
+    const h = w * 0.72, dir = o.dir || 1;
+    const body = `M${f(x - w / 2)},${f(y)} L${f(x + w / 2)},${f(y)} C${f(x + w / 2)},${f(y + h * 0.78)} ${f(x + w * 0.3)},${f(y + h)} ${f(x)},${f(y + h)} C${f(x - w * 0.3)},${f(y + h)} ${f(x - w / 2)},${f(y + h * 0.78)} ${f(x - w / 2)},${f(y)}Z`;
+    const handle = `M${f(x + dir * w * 0.46)},${f(y + h * 0.16)} C${f(x + dir * w * 0.8)},${f(y + h * 0.06)} ${f(x + dir * w * 0.82)},${f(y + h * 0.66)} ${f(x + dir * w * 0.33)},${f(y + h * 0.76)}`;
+    let s = "";
+    if (o.saucer !== false) s += gE(x, y + h + 1, w * 0.74, w * 0.12, o.saucerC || cup);
+    s += gS(handle, w * 0.08, cup) + gP(body, cup);
+    s += gL(`M${f(x - w / 6)},${f(y + w * 0.1)} L${f(x - w / 7)},${f(y + h * 0.95)}`) + gL(`M${f(x + w / 6)},${f(y + w * 0.1)} L${f(x + w / 7)},${f(y + h * 0.95)}`);
+    s += gE(x, y, w / 2, w * 0.12, cup) + `<ellipse cx="${f(x)}" cy="${f(y + 1)}" rx="${f(w / 2 - w * 0.06)}" ry="${f(w * 0.085)}" fill="${coffee}" stroke="${LEAD}" stroke-width="2"/>`;
+    return s;
+  }
+
+  const gStar = (x, y, r, c) => gP(star4(x, y, r * 1.5), c) + gP(star4(x, y, r), c, `transform="rotate(45 ${f(x)} ${f(y)})"`);
+  const gHeart = (x, y, w, c) => { const k = w / 2; return gP(heart(x, y, w), c) + gL(`M${f(x)},${f(y - k * 0.38)} L${f(x)},${f(y + k * 0.9)}`); };
+  const leaf = (x, y, len, ang, c) => gP(`M0,0 Q${f(len / 2)},${f(-len * 0.34)} ${len},0 Q${f(len / 2)},${f(len * 0.34)} 0,0Z`, c, `transform="translate(${x},${y}) rotate(${ang})"`) + gL(`M${x},${y} L${f(x + Math.cos(ang * Math.PI / 180) * len * 0.8)},${f(y + Math.sin(ang * Math.PI / 180) * len * 0.8)}`);
+
+  const GLASS = {
+    1: { // чашка в лучах, сердце в паре
+      art() {
+        let s = glassRays(150, 196, 16, [0, 60, 120, 190, 600], [["#F4D891", "#F8E4AE"], ["#E9B455", "#F2C46A"], ["#D8923A", "#E3A445"], ["#B86E2A", "#C97F33"]], 3, 4);
+        s += glassCup(150, 166, 116, "#F3EBDC", "#5A3220", { saucerC: "#E6D8C0" });
+        s += gS("M132,154 C124,138 140,128 132,112", 6, "#FBF7EE") + gS("M150,150 C142,132 158,120 150,100", 6, "#FBF7EE") + gS("M168,154 C160,138 176,128 168,112", 6, "#FBF7EE");
+        s += gHeart(150, 74, 40, "#B3243A");
+        return s;
+      }
+    },
+    2: { // рассвет над холмами, ветка кофе с ягодами
+      art() {
+        let s = glassRays(150, 212, 18, [0, 48, 96, 156, 600], [["#FBE2A6"], ["#F8D28A", "#F6C66A"], ["#F2A675", "#F0B07A"], ["#E58A8A", "#DE7B86"]], 8, 0);
+        s += gC(150, 212, 38, "#F2A62E") + gC(150, 212, 24, "#F8CB55");
+        s += gP("M14,206 C70,190 120,196 160,204 C210,214 250,194 286,196 V272 H14Z", "#9BBF6E");
+        s += gL("M70,196 L62,272") + gL("M150,203 L156,272") + gL("M232,204 L226,272");
+        s += gP("M14,234 C70,220 130,224 180,234 C230,244 262,232 286,228 V272 H14Z", "#6E9650");
+        s += gL("M110,226 L104,272") + gL("M200,238 L206,272");
+        s += gP("M14,258 C60,250 120,250 170,258 C220,266 260,258 286,254 V272 H14Z", "#4D7440");
+        s += gS("M14,250 C46,238 78,224 120,216", 6, "#6B4226");
+        s += leaf(40, 240, 30, -70, "#3F7A44") + leaf(60, 232, 28, 30, "#5C9A4E") + leaf(86, 224, 30, -60, "#4B8A47") + leaf(104, 219, 26, 25, "#3F7A44");
+        [[50, 247], [58, 254], [44, 256], [94, 230], [102, 237]].forEach(([x, y]) => s += gC(x, y, 6, "#B3243A", 2.4));
+        return s;
+      }
+    },
+    3: { // пар становится голубем
+      art() {
+        let s = glassRays(150, 250, 14, [0, 70, 140, 220, 600], [["#B7D4E6", "#C8DFEC"], ["#86B2D2", "#94BEDA"], ["#5B8DB8", "#6A9AC2"], ["#3F6E9E", "#35628F"]], 5, -2);
+        s += gS("M136,194 C126,174 146,162 134,144 C124,128 104,132 96,122", 6, "#FBF7EE");
+        s += gS("M152,192 C164,172 146,156 158,138 C168,122 186,124 192,112", 6, "#FBF7EE");
+        s += gS("M168,194 C182,178 176,164 190,152 C202,142 222,148 228,134", 6, "#FBF7EE");
+        const dove = `<g transform="translate(146,86) scale(1.05)">` +
+          gP("M6,0 C14,-22 32,-40 52,-46 C44,-26 32,-10 20,0 Z", "#DCE8F0") +
+          gP("M-46,22 L-30,10 C-14,4 6,2 22,-2 C28,-10 38,-12 44,-8 L54,-6 L44,-2 C40,6 30,12 18,14 C0,20 -18,22 -30,18 L-50,30 Z", "#F7F5EF") +
+          gP("M-4,4 C-18,-18 -16,-46 -2,-64 C4,-44 14,-26 18,-2 Z", "#EEF3F6") +
+          `<circle cx="40" cy="-7" r="1.8" fill="${LEAD}"/></g>`;
+        s += dove;
+        s += glassCup(150, 202, 92, "#F3EBDC", "#5A3220", { saucerC: "#E6D8C0" });
+        return s;
+      }
+    },
+    4: { // ночь, звёзды, Млечный путь из чашки
+      art() {
+        let s = glassRays(150, 250, 14, [0, 80, 150, 230, 600], [["#2B3B7A", "#33448A"], ["#22346E", "#2B2F6E"], ["#1E2A5E", "#2A2462"], ["#181F4A", "#221C50"]], 9, 3);
+        s += gC(88, 80, 20, "#F3E3A6") + gC(98, 73, 17, "#2B2F6E");
+        const R = rng(17);
+        for (let t = 0.08; t <= 1; t += 0.045) {
+          const x = (1 - t) ** 2 * 150 + 2 * (1 - t) * t * 118 + t * t * 236, y = (1 - t) ** 2 * 206 + 2 * (1 - t) * t * 96 + t * t * 52;
+          const g = (R() - 0.5) * (6 + t * 26);
+          s += gC(x + g, y + g * 0.6, 2.4 + R() * 2.2, "#F6F1E2", 1.6);
+        }
+        [[214, 164, 10], [62, 164, 8], [196, 100, 7], [126, 50, 6.5], [254, 128, 6], [44, 124, 6], [176, 50, 5]].forEach(([x, y, r]) => s += gStar(x, y, r, "#F2C14E"));
+        s += gP("M14,236 C80,218 220,218 286,236 V272 H14Z", "#2E4A3E");
+        s += gL("M90,226 L84,272") + gL("M210,226 L216,272");
+        s += glassCup(150, 214, 40, "#F3EBDC", "#5A3220", { saucerC: "#E6D8C0" });
+        return s;
+      }
+    },
+    5: { // две чашки, одно сердце из двух половин
+      art() {
+        let s = glassRays(150, 118, 16, [0, 54, 104, 170, 600], [["#F6CF9A", "#F9DDB2"], ["#F2B27A", "#EFA582"], ["#E98A7A", "#E07B86"], ["#D9667A", "#C9566E"]], 12, 0);
+        s += gP("M14,250 H286 V272 H14Z", "#8C5A3A") + gL("M100,250 V272") + gL("M200,250 V272");
+        s += gS("M92,198 C88,176 116,170 136,148", 6, "#FBF7EE") + gS("M208,198 C212,176 184,170 164,148", 6, "#FBF7EE");
+        s += glassCup(92, 206, 70, "#F3EBDC", "#5A3220", { dir: -1, saucerC: "#E6D8C0" });
+        s += glassCup(208, 206, 70, "#F3EBDC", "#5A3220", { dir: 1, saucerC: "#E6D8C0" });
+        s += gHeart(150, 104, 76, "#B3243A");
+        return s;
+      }
+    }
+  };
+
+  function renderGlass(th) {
+    const d = th.day, id = `gl${d}`;
+    let s = `<defs>
+      <clipPath id="${id}-win"><path d="${WIN}"/></clipPath>
+      <clipPath id="${id}-glass"><path d="${WIN}"/><rect x="14" y="282" width="272" height="104"/><circle cx="34" cy="34" r="17"/><circle cx="266" cy="34" r="17"/></clipPath>
+      <radialGradient id="${id}-glow" cx="50%" cy="34%" r="62%"><stop offset="0" stop-color="#fff" stop-opacity=".34"/><stop offset=".55" stop-color="#fff" stop-opacity=".08"/><stop offset="1" stop-color="#000" stop-opacity=".22"/></radialGradient>
+      <filter id="${id}-streak" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".014 .06" numOctaves="3" seed="${d * 3}"/><feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1.3 -.62"/></filter>
+      <filter id="${id}-mottle" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".09" numOctaves="3" seed="${d * 5}"/><feColorMatrix values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1.1 -.5"/></filter>
+    </defs>`;
+    s += `<rect width="300" height="400" fill="${LEAD}"/>`;
+    s += `<g clip-path="url(#${id}-win)">${GLASS[d].art()}</g>`;
+    s += gP(WIN, "none", `stroke-width="4"`);
+    // табличка с текстом: два стекла
+    s += gP("M14,282 H200 V386 H14Z", "#F1E1B8") + gP("M200,282 H286 V386 H200Z", "#F7EFDC");
+    // уголки над аркой: медальоны с числом и зерном
+    s += gC(34, 34, 17, "#E9B455") + gC(266, 34, 17, "#E9B455");
+    s += gP("M266,22 C276,26 276,42 266,46 C256,42 256,26 266,22Z", "#6B4226") + gL("M266,24 C262,32 270,36 266,44");
+    // свет и фактура стекла
+    s += `<g clip-path="url(#${id}-glass)"><rect width="300" height="400" fill="url(#${id}-glow)"/>` +
+      `<rect width="300" height="400" filter="url(#${id}-streak)" opacity=".35"/><rect width="300" height="400" filter="url(#${id}-mottle)" opacity=".22"/></g>`;
+    s += T(34, 40, String(d), { font: "Kurale", size: 17, anchor: "middle", fill: LEAD });
+    s += T(26, 300, `${d} ДЕКАБРЯ`, { font: "Philosopher", size: 8.5, weight: 700, ls: 2, fill: "#7A2E1E" });
+    s += T(26, 318, "Спасибо, Господи,", { font: "Philosopher", size: 13.5, italic: true, fill: LEAD });
+    const fs = fit(th.sticker, 21, 166, 0.5);
+    th.sticker.forEach((l, i) => s += T(25, 340 + i * fs * 1.02, l, { font: "Kurale", size: fs, fill: LEAD }));
+    s += T(26, 377, th.ref, { font: "Philosopher", size: 10, fill: LEAD, op: 0.8 });
+    s += qr(window.dayUrl(d), 207, 298, 72, LEAD, "#FFFDF7");
+    return svg(s, `Наклейка «Витраж», день ${d}: ${th.topic}`);
+  }
+
+  /* ─────────────────────────── E. АКВАРЕЛЬ КОФЕ (нарисовано кофе по хлопковой бумаге) ─────────────────────────── */
+
+  const WC = { paper: "#F8F2E7", c1: "#D6AE82", c2: "#A26B3B", c3: "#5A361D", ink: "#3B2414" };
+
+  function wcDefs(id, d) {
+    return `<defs>
+      <filter id="${id}-wc" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB">
+        <feTurbulence type="fractalNoise" baseFrequency=".028" numOctaves="4" seed="${d * 7}" result="n"/>
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="13" xChannelSelector="R" yChannelSelector="G" result="d"/>
+        <feGaussianBlur in="d" stdDeviation="1.1" result="b"/>
+        <feTurbulence type="fractalNoise" baseFrequency=".75" numOctaves="2" seed="3" result="g"/>
+        <feColorMatrix in="g" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.6 1.62" result="ga"/>
+        <feComposite in="b" in2="ga" operator="in" result="gran"/>
+        <feMorphology in="b" operator="erode" radius="2.2" result="er"/>
+        <feComposite in="b" in2="er" operator="out" result="edge"/>
+        <feMerge><feMergeNode in="gran"/><feMergeNode in="edge"/></feMerge>
+      </filter>
+      <filter id="${id}-bloom" x="-40%" y="-40%" width="180%" height="180%">
+        <feTurbulence type="fractalNoise" baseFrequency=".02" numOctaves="3" seed="${d * 11}" result="n"/>
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="30" xChannelSelector="R" yChannelSelector="G" result="d"/>
+        <feGaussianBlur in="d" stdDeviation="5"/>
+      </filter>
+      <filter id="${id}-ink" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency=".09" numOctaves="2" seed="${d}" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="1.8" xChannelSelector="R" yChannelSelector="G"/></filter>
+      <filter id="${id}-ring" x="-20%" y="-20%" width="140%" height="140%"><feTurbulence type="fractalNoise" baseFrequency=".06" numOctaves="2" seed="${d * 13}" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="5" xChannelSelector="R" yChannelSelector="G" result="d"/><feGaussianBlur in="d" stdDeviation=".5"/></filter>
+      <filter id="${id}-paper" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".55" numOctaves="4" seed="4"/><feColorMatrix values="0 0 0 0 .45  0 0 0 0 .32  0 0 0 0 .2  0 0 0 .5 -.2"/></filter>
+      <radialGradient id="${id}-vig" cx="50%" cy="45%" r="75%"><stop offset=".6" stop-color="#C9A97F" stop-opacity="0"/><stop offset="1" stop-color="#C9A97F" stop-opacity=".28"/></radialGradient>
+    </defs>`;
+  }
+
+  function wcKit(id) {
+    return {
+      W: (c, color, op) => `<g filter="url(#${id}-wc)" fill="${color}" opacity="${op}">${c}</g>`,
+      Ws: (d, color, w, op) => `<g filter="url(#${id}-wc)" opacity="${op}"><path d="${d}" fill="none" stroke="${color}" stroke-width="${w}" stroke-linecap="round"/></g>`,
+      B: (c, color, op) => `<g filter="url(#${id}-bloom)" fill="${color}" opacity="${op}">${c}</g>`,
+      I: (c, w = 1.3) => `<g filter="url(#${id}-ink)" fill="none" stroke="${WC.ink}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round">${c}</g>`,
+      ring: (cx, cy, r, op) => `<g filter="url(#${id}-ring)" opacity="${op}"><circle cx="${cx}" cy="${cy}" r="${r}" fill="#C08A55" fill-opacity=".09"/>` +
+        `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#9C6436" stroke-width="2.4" stroke-dasharray="${f(r * 4.6)} ${f(r * 0.5)} ${f(r * 0.8)} ${f(r * 0.4)}"/>` +
+        `<circle cx="${cx}" cy="${cy}" r="${r - 3}" fill="none" stroke="#9C6436" stroke-width=".8" stroke-opacity=".6"/></g>`,
+      splat: (seedN, n, x0, y0, x1, y1, color, rMax = 2.2) => {
+        const R = rng(seedN); let s = "";
+        for (let i = 0; i < n; i++) s += `<circle cx="${f(x0 + R() * (x1 - x0))}" cy="${f(y0 + R() * (y1 - y0))}" r="${f(0.4 + R() * rMax)}" fill="${color}" opacity="${f(0.35 + R() * 0.5)}"/>`;
+        return s;
+      }
+    };
+  }
+
+  // чашка: размывки + чуть смещённый контур тушью
+  function wcCup(K, x, y, w, o = {}) {
+    const h = w * 0.72, dir = o.dir || 1;
+    const body = `M${f(x - w / 2)},${f(y)} L${f(x + w / 2)},${f(y)} C${f(x + w / 2)},${f(y + h * 0.78)} ${f(x + w * 0.3)},${f(y + h)} ${f(x)},${f(y + h)} C${f(x - w * 0.3)},${f(y + h)} ${f(x - w / 2)},${f(y + h * 0.78)} ${f(x - w / 2)},${f(y)}Z`;
+    const shade = `M${f(x + w * 0.14)},${f(y)} L${f(x + w / 2)},${f(y)} C${f(x + w / 2)},${f(y + h * 0.78)} ${f(x + w * 0.32)},${f(y + h)} ${f(x + w * 0.1)},${f(y + h)}Z`;
+    const handle = `M${f(x + dir * w * 0.46)},${f(y + h * 0.16)} C${f(x + dir * w * 0.8)},${f(y + h * 0.06)} ${f(x + dir * w * 0.82)},${f(y + h * 0.66)} ${f(x + dir * w * 0.33)},${f(y + h * 0.76)}`;
+    let s = "";
+    s += K.W(`<ellipse cx="${x}" cy="${f(y + h + 2)}" rx="${f(w * 0.76)}" ry="${f(w * 0.12)}"/>`, WC.c1, 0.55);
+    s += K.Ws(handle, WC.c1, w * 0.09, 0.6);
+    s += K.W(`<path d="${body}"/>`, WC.c1, 0.5);
+    s += K.W(`<path d="${shade}"/>`, WC.c2, 0.38);
+    s += K.W(`<ellipse cx="${x}" cy="${f(y + 1)}" rx="${f(w / 2 - w * 0.06)}" ry="${f(w * 0.085)}"/>`, WC.c3, 0.85);
+    const dx = 1.6, dy = -1.4;
+    s += K.I(`<g transform="translate(${dx},${dy})"><path d="${body}"/><ellipse cx="${x}" cy="${y}" rx="${f(w / 2)}" ry="${f(w * 0.12)}"/><path d="${handle}"/>` +
+      `<path d="M${f(x - w * 0.72)},${f(y + h + 4)} Q${x},${f(y + h + w * 0.2)} ${f(x + w * 0.74)},${f(y + h + 2)}"/></g>`);
+    return s;
+  }
+
+  const AQUA = {
+    1(K) { // вкус
+      let s = K.ring(214, 232, 56, 0.6);
+      s += wcCup(K, 150, 152, 122);
+      s += K.W(`<path d="${heart(150, 72, 36)}"/>`, WC.c2, 0.6);
+      s += K.I(`<path d="${heart(151.5, 70.5, 37)}"/><path d="M130,138 c-8,-12 8,-20 0,-34"/><path d="M150,134 c-8,-14 8,-24 0,-42"/><path d="M170,138 c-8,-12 8,-20 0,-34"/>`);
+      s += K.splat(3, 14, 40, 60, 270, 250, WC.c2);
+      return s;
+    },
+    2(K) { // утро: солнце — нетронутая бумага
+      let s = K.W(`<path fill-rule="evenodd" d="M26,74 C40,48 70,58 92,46 C120,30 150,52 178,40 C206,28 240,54 262,48 C282,60 280,120 280,200 L20,204 C16,150 18,100 26,74Z M150,147 a30,30 0 1 0 0.1,0Z"/>`, WC.c1, 0.5);
+      s += K.W(`<path fill-rule="evenodd" d="M22,128 C100,120 200,122 280,128 L280,204 L20,206Z M150,147 a34,34 0 1 0 0.1,0Z"/>`, WC.c2, 0.28);
+      s += K.W(`<path d="M18,190 C70,172 120,180 160,188 C210,198 250,176 282,178 L282,236 L20,240Z"/>`, WC.c1, 0.65);
+      s += K.W(`<path d="M18,214 C70,198 130,204 180,214 C230,224 262,210 282,208 L284,252 L18,256Z"/>`, WC.c2, 0.5);
+      s += K.W(`<path d="M20,238 C60,228 120,232 170,240 C220,248 260,238 282,236 C276,256 240,268 150,268 C70,268 30,258 20,238Z"/>`, WC.c3, 0.55);
+      s += K.I(`<circle cx="150" cy="177" r="29"/><path d="M84,96 q6,-6 11,0 q5,-6 11,0"/><path d="M110,82 q5,-5 9,0 q4,-5 9,0"/>` +
+        [204, 214, 226].map(y => `<path d="M24,${y + 8} C70,${y - 8} 130,${y - 4} 180,${y + 6} C230,${y + 16} 262,${y + 2} 280,${y}" stroke-dasharray="0 9" stroke-width="2.6"/>`).join(""), 1.3);
+      return s;
+    },
+    3(K) { // дыхание: пар уносит семена
+      let s = K.B(`<circle cx="120" cy="96" r="44"/><circle cx="190" cy="84" r="38"/>`, WC.c1, 0.32);
+      const paths = ["M134,184 C122,160 146,148 132,126 C118,104 88,112 86,90 C84,68 112,58 122,72", "M152,182 C166,158 140,140 158,116 C176,94 204,102 210,80 C216,60 194,48 182,58", "M170,184 C186,168 176,154 194,140 C210,128 234,136 236,116"];
+      paths.forEach(d => s += K.Ws(d, WC.c2, 12, 0.32));
+      s += wcCup(K, 150, 190, 92);
+      s += K.I(paths.map(d => `<path d="${d}" transform="translate(2,-2)"/>`).join(""), 1.2);
+      [[150, 70, 10, 1.5], [232, 84, 30, 1.2], [206, 60, 18, 1.0], [70, 124, -35, 1.1], [250, 136, 40, 1.15], [100, 80, -20, 1.25]].forEach(([x, y, r, sc]) => s += `<g filter="url(#__ID__-ink)">${seed(x, y, r, sc, WC.ink)}</g>`);
+      return s;
+    },
+    4(K) { // ночное небо, звёзды — брызги белил
+      const sky = "M36,70 Q150,48 264,70 Q290,150 268,222 Q150,246 32,222 Q10,150 36,70Z";
+      let s = K.W(`<path d="${sky}"/>`, WC.c2, 0.55) + K.W(`<path d="${sky}" transform="translate(150,128) scale(.94) translate(-150,-128)"/>`, WC.c3, 0.85);
+      s += K.W(`<path d="M150,200 Q118,110 240,80" fill="none" stroke="${WC.paper}" stroke-width="26" stroke-linecap="round"/>`, WC.paper, 0.35);
+      const R = rng(41);
+      let dots = "";
+      for (let t = 0; t <= 1; t += 0.01) {
+        const x = (1 - t) ** 2 * 150 + 2 * (1 - t) * t * 118 + t * t * 240, y = (1 - t) ** 2 * 200 + 2 * (1 - t) * t * 110 + t * t * 80;
+        const g = (R() + R() - 1) * (4 + t * 18);
+        dots += `<circle cx="${f(x + g)}" cy="${f(y + g * 0.6)}" r="${f(0.5 + R() * 1.3)}" fill="#FFFCF4" opacity="${f(0.6 + R() * 0.4)}"/>`;
+      }
+      s += dots + K.splat(9, 60, 44, 76, 258, 206, "#FFFCF4", 1.6);
+      s += K.W(`<circle cx="88" cy="104" r="17"/>`, "#FFFCF4", 0.95) + K.W(`<circle cx="99" cy="97" r="15"/>`, WC.c3, 0.95);
+      s += wcCup(K, 150, 200, 44);
+      return s;
+    },
+    5(K) { // друзья: два кольца от чашек пересекаются
+      let s = K.ring(120, 140, 64, 0.65) + K.ring(184, 146, 64, 0.65);
+      s += K.W(`<path d="${heart(150, 112, 58)}"/>`, WC.c2, 0.4);
+      s += wcCup(K, 96, 198, 74, { dir: -1 }) + wcCup(K, 204, 198, 74, { dir: 1 });
+      s += K.I(`<path d="M98,190 C96,172 124,174 150,156 C124,142 100,128 102,108 C104,86 138,80 150,102"/><path d="M202,190 C204,172 176,174 150,156 C176,142 200,128 198,108 C196,86 162,80 150,102"/>`, 1.4);
+      return s;
+    }
+  };
+
+  function renderAqua(th) {
+    const d = th.day, id = `wa${d}`, K = wcKit(id);
+    let s = wcDefs(id, d);
+    s += `<rect width="300" height="400" fill="${WC.paper}"/><rect width="300" height="400" filter="url(#${id}-paper)"/>`;
+    s += AQUA[d](K).replace(/__ID__/g, id);
+    s += `<rect width="300" height="400" fill="url(#${id}-vig)"/>`;
+    s += T(22, 44, `${d} декабря`, { font: "Marck Script", size: 24, fill: WC.c2 });
+    s += T(22, 302, "Спасибо, Господи,", { font: "Marck Script", size: 22, fill: WC.ink });
+    const fs = fit(th.sticker, 27, 176, 0.5);
+    th.sticker.forEach((l, i) => s += T(21, 331 + i * fs * 1.04, l, { font: "Lora", size: fs, weight: 600, italic: true, fill: WC.ink }));
+    s += T(22, 331 + (th.sticker.length - 1) * fs * 1.04 + 22, th.ref, { font: "Lora", size: 10.5, italic: true, fill: WC.c2 });
+    s += qr(window.dayUrl(d), 212, 298, 68, WC.ink, WC.paper);
+    return svg(s, `Наклейка «Акварель кофе», день ${d}: ${th.topic}`);
+  }
+
   window.STICKER_INTERNALS = { paperScene, PAPER, ARCH, cupSide, renderPaperHybrid };
   window.STICKER_STYLES = [
     { id: "latte", name: "Пенка", render: renderLatte },
     { id: "paper", name: "Бумага", render: renderPaper },
-    { id: "lino", name: "Гравюра", render: renderLino }
+    { id: "lino", name: "Гравюра", render: renderLino },
+    { id: "glass", name: "Витраж", render: renderGlass },
+    { id: "aqua", name: "Акварель", render: renderAqua }
   ];
 })();
