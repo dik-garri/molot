@@ -88,7 +88,7 @@
   document.getElementById("theme-list").innerHTML = THEMES.map(t => `
     <article class="theme" id="day-${t.day}">
       <header><span class="d">${String(t.day).padStart(2, "0")}</span><h3>${esc(t.topic)}</h3></header>
-      <div class="say">На наклейке: <b>Спасибо, Господи, ${esc(t.sticker.join(" "))}</b></div>
+      <div class="say">На наклейке: <b>${esc(THANKS)} ${esc(t.sticker.join(" "))}</b></div>
       <blockquote>${esc(t.verse)}<cite>${esc(t.ref)}</cite></blockquote>
       <p>${esc(t.text.join(" "))}</p>
       <div class="meta"><b>Сегодня:</b> ${esc(t.practice)}</div>

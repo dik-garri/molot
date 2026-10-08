@@ -6,7 +6,7 @@
 <title>День адвента — Вкусите и увидите</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Forum&family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Manrope:wght@600;700&family=Unbounded:wght@600;700&family=PT+Serif:ital,wght@0,400;0,700;1,400&family=Yeseva+One&family=Kurale&family=Philosopher:ital,wght@0,400;0,700;1,400&family=Marck+Script&family=Lora:ital,wght@1,400;1,600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/site.css?v=2">
+<link rel="stylesheet" href="css/site.css?v=4">
 <style>
   body { background: var(--foam); }
   main { max-width: 560px; margin: 0 auto; padding: 22px 20px 40px; }
@@ -30,9 +30,9 @@
 </head>
 <body>
 <main id="day"></main>
-<script src="vendor/qrcode.js?v=2"></script>
-<script src="js/data.js?v=2"></script>
-<script src="js/stickers.js?v=2"></script>
+<script src="vendor/qrcode.js?v=4"></script>
+<script src="js/data.js?v=4"></script>
+<script src="js/stickers.js?v=4"></script>
 <script>
 (function () {
   const q = new URLSearchParams(location.search);
@@ -45,7 +45,7 @@
   document.getElementById("day").innerHTML = `
     <div class="top"><span class="eyebrow">${d} декабря · день ${d} из 24</span><a class="eyebrow" href="./">О календаре</a></div>
     ${d <= 5 ? `<div class="art">${st.render(t)}</div>` : ""}
-    <div class="thanks">Спасибо, Господи,</div>
+    <div class="thanks">${esc(window.THANKS)}</div>
     <h1>${esc(t.sticker.join(" "))}</h1>
     <blockquote class="verse">${esc(t.verse)}<cite>${esc(t.ref)}</cite></blockquote>
     <div class="brew">Пока вода проходит через фильтр — около трёх минут</div>

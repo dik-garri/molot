@@ -42,6 +42,8 @@
       `C${f(cx + k * 0.95)},${f(cy - k)} ${f(cx + k * 1.35)},${f(cy + k * 0.05)} ${f(cx)},${f(cy + k * 0.9)}Z`;
   }
 
+  const dropPath = (x, y, h) => `M${f(x)},${f(y - h / 2)} C${f(x)},${f(y - h / 2)} ${f(x + h * 0.36)},${f(y)} ${f(x + h * 0.36)},${f(y + h * 0.16)} A${f(h * 0.36)},${f(h * 0.36)} 0 0 1 ${f(x - h * 0.36)},${f(y + h * 0.16)} C${f(x - h * 0.36)},${f(y)} ${f(x)},${f(y - h / 2)} ${f(x)},${f(y - h / 2)}Z`;
+
   function star4(cx, cy, r) {
     const i = r * 0.2;
     return `M${f(cx)},${f(cy - r)} Q${f(cx + i)},${f(cy - i)} ${f(cx + r)},${f(cy)} Q${f(cx + i)},${f(cy + i)} ${f(cx)},${f(cy + r)} ` +
@@ -190,7 +192,7 @@
     const ink = p.ink;
     s += T(22, 44, String(d), { font: "Cormorant Garamond", size: 36, weight: 600, fill: ink });
     s += T(23, 64, "ДЕКАБРЯ", { font: "Manrope", size: 7, weight: 700, ls: 2, fill: ink, op: 0.7 });
-    s += T(22, 302, "Спасибо, Господи,", { font: "Cormorant Garamond", italic: true, size: 19, weight: 500, fill: ink });
+    s += T(22, 302, window.THANKS, { font: "Cormorant Garamond", italic: true, size: 19, weight: 500, fill: ink });
     const fs = fit(th.sticker, 31, 178, 0.47);
     th.sticker.forEach((l, i) => s += T(21, 333 + i * fs * 0.98, l, { font: "Cormorant Garamond", size: fs, weight: 700, fill: ink }));
     s += T(23, 333 + (th.sticker.length - 1) * fs * 0.98 + 22, th.ref.toUpperCase(), { font: "Manrope", size: 8.5, weight: 700, ls: 1.6, fill: ink, op: 0.72 });
@@ -331,8 +333,8 @@
     const d = th.day;
     let s = "";
     s += T(44, 50.5, String(d), { font: "Unbounded", size: 17, weight: 700, anchor: "middle", fill: p.dark ? "#222A47" : "#FFF7EC" });
-    s += T(24, 300, "Спасибо, Господи,", { font: "Golos Text", size: 13, weight: 500, fill: p.ink, op: 0.85 });
-    const fs = fit(th.sticker, 21, 178, 0.66);
+    s += T(24, 300, window.THANKS, { font: "Golos Text", size: 13, weight: 500, fill: p.ink, op: 0.85 });
+    const fs = fit(th.sticker, 21, 176, 0.76);
     th.sticker.forEach((l, i) => s += T(23, 327 + i * fs * 1.18, l, { font: "Unbounded", size: fs, weight: 600, fill: p.ink }));
     s += T(24, 327 + (th.sticker.length - 1) * fs * 1.18 + 22, th.ref, { font: "Golos Text", size: 10, weight: 600, fill: p.ink, op: 0.65 });
     s += L(`<g transform="rotate(-2 244 326)">${qr(window.dayUrl(d), 208, 290, 72, "#24150D", "#FFFDF8")}</g>`);
@@ -405,7 +407,7 @@
       s += `<circle cx="150" cy="150" r="40" fill="${INK}"/>`;
       s += cupSide(150, 132, 98, { fill: CREAM, stroke: INK, strokeW: 2, coffee: INK, hatch: `${id}-hatch` });
       s += `<g fill="none" stroke="${CREAM}" stroke-width="3.6" stroke-linecap="round"><path d="M132,118 c-8,-12 8,-18 0,-32"/><path d="M150,114 c-8,-14 8,-22 0,-40"/><path d="M168,118 c-8,-12 8,-18 0,-32"/></g>`;
-      s += `<path d="${heart(150, 64, 22)}" fill="${A}"/>`;
+      s += `<path d="${dropPath(150, 60, 26)}" fill="${A}"/>`;
       return s;
     },
     2(id, A) { // солнце встаёт из чашки
@@ -495,8 +497,8 @@
     s += `<g filter="url(#${id}-wear)">${ink}</g>`;
     s += T(150, 238.5, `${d} ДЕКАБРЯ`, { font: "PT Serif", size: 10.5, weight: 700, ls: 2.4, anchor: "middle", fill: d === 4 ? INK : CREAM });
     s += T(150, 31.5, "АДВЕНТ · 24 ПОВОДА БЛАГОДАРИТЬ", { font: "PT Serif", size: 6.4, weight: 700, ls: 1.8, anchor: "middle", fill: INK, op: 0.85 });
-    s += T(26, 282, "СПАСИБО, ГОСПОДИ,", { font: "PT Serif", size: 10, weight: 700, ls: 1.6, fill: INK });
-    const fs = fit(th.sticker, 27, 172, 0.58);
+    s += T(26, 282, window.THANKS.toUpperCase(), { font: "PT Serif", size: 10, weight: 700, ls: 1.6, fill: INK });
+    const fs = fit(th.sticker, 27, 170, 0.62);
     th.sticker.forEach((l, i) => s += T(25, 309 + i * fs * 1.08, l, { font: "Yeseva One", size: fs, fill: INK }));
     s += T(26, 309 + (th.sticker.length - 1) * fs * 1.08 + 21, th.ref, { font: "PT Serif", size: 11, italic: true, fill: INK, op: 0.85 });
     s += qr(window.dayUrl(d), 210, 266, 66, INK, CREAM);
@@ -556,7 +558,7 @@
         let s = glassRays(150, 196, 16, [0, 60, 120, 190, 600], [["#F4D891", "#F8E4AE"], ["#E9B455", "#F2C46A"], ["#D8923A", "#E3A445"], ["#B86E2A", "#C97F33"]], 3, 4);
         s += glassCup(150, 166, 116, "#F3EBDC", "#5A3220", { saucerC: "#E6D8C0" });
         s += gS("M132,154 C124,138 140,128 132,112", 6, "#FBF7EE") + gS("M150,150 C142,132 158,120 150,100", 6, "#FBF7EE") + gS("M168,154 C160,138 176,128 168,112", 6, "#FBF7EE");
-        s += gHeart(150, 74, 40, "#B3243A");
+        s += gP(dropPath(150, 72, 44), "#4F8FBF") + gL("M150,52 L150,84");
         return s;
       }
     },
@@ -643,7 +645,7 @@
       `<rect width="300" height="400" filter="url(#${id}-streak)" opacity=".35"/><rect width="300" height="400" filter="url(#${id}-mottle)" opacity=".22"/></g>`;
     s += T(34, 40, String(d), { font: "Kurale", size: 17, anchor: "middle", fill: LEAD });
     s += T(26, 300, `${d} ДЕКАБРЯ`, { font: "Philosopher", size: 8.5, weight: 700, ls: 2, fill: "#7A2E1E" });
-    s += T(26, 318, "Спасибо, Господи,", { font: "Philosopher", size: 13.5, italic: true, fill: LEAD });
+    s += T(26, 318, window.THANKS, { font: "Philosopher", size: 13.5, italic: true, fill: LEAD });
     const fs = fit(th.sticker, 21, 166, 0.5);
     th.sticker.forEach((l, i) => s += T(25, 340 + i * fs * 1.02, l, { font: "Kurale", size: fs, fill: LEAD }));
     s += T(26, 377, th.ref, { font: "Philosopher", size: 10, fill: LEAD, op: 0.8 });
@@ -719,8 +721,8 @@
     1(K) { // вкус
       let s = K.ring(214, 232, 56, 0.6);
       s += wcCup(K, 150, 152, 122);
-      s += K.W(`<path d="${heart(150, 72, 36)}"/>`, WC.c2, 0.6);
-      s += K.I(`<path d="${heart(151.5, 70.5, 37)}"/><path d="M130,138 c-8,-12 8,-20 0,-34"/><path d="M150,134 c-8,-14 8,-24 0,-42"/><path d="M170,138 c-8,-12 8,-20 0,-34"/>`);
+      s += K.W(`<path d="${dropPath(150, 70, 40)}"/>`, WC.c2, 0.6);
+      s += K.I(`<path d="${dropPath(151.5, 68.5, 41)}"/><path d="M130,138 c-8,-12 8,-20 0,-34"/><path d="M150,134 c-8,-14 8,-24 0,-42"/><path d="M170,138 c-8,-12 8,-20 0,-34"/>`);
       s += K.splat(3, 14, 40, 60, 270, 250, WC.c2);
       return s;
     },
@@ -775,8 +777,8 @@
     s += AQUA[d](K).replace(/__ID__/g, id);
     s += `<rect width="300" height="400" fill="url(#${id}-vig)"/>`;
     s += T(22, 44, `${d} декабря`, { font: "Marck Script", size: 24, fill: WC.c2 });
-    s += T(22, 302, "Спасибо, Господи,", { font: "Marck Script", size: 22, fill: WC.ink });
-    const fs = fit(th.sticker, 27, 176, 0.5);
+    s += T(22, 302, window.THANKS, { font: "Marck Script", size: 22, fill: WC.ink });
+    const fs = fit(th.sticker, 27, 174, 0.58);
     th.sticker.forEach((l, i) => s += T(21, 331 + i * fs * 1.04, l, { font: "Lora", size: fs, weight: 600, italic: true, fill: WC.ink }));
     s += T(22, 331 + (th.sticker.length - 1) * fs * 1.04 + 22, th.ref, { font: "Lora", size: 10.5, italic: true, fill: WC.c2 });
     s += qr(window.dayUrl(d), 212, 298, 68, WC.ink, WC.paper);
