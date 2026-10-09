@@ -102,8 +102,8 @@ try:
 except Exception as e:
     print("GPU недоступен:", e)
 scene.view_settings.view_transform = "Standard"
-scene.render.resolution_x = 900
-scene.render.resolution_y = 1200
+scene.render.resolution_x = 960
+scene.render.resolution_y = 1140
 scene.render.filepath = out
 bpy.ops.render.render(write_still=True)
 print("готово:", out)

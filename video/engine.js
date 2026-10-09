@@ -146,7 +146,10 @@
   }
   function stop() { cancelAnimationFrame(raf); if (src) { try { src.stop(); } catch (e) {} src = null; } }
 
-  const ready = document.fonts.ready.then(() => document.fonts.load(`20px ${T.display}`)).catch(() => {});
+  // все шрифты наклеек грузим заранее, иначе первые кадры уйдут с запасным шрифтом
+  const FONTS = [`20px ${T.display}`, `20px ${T.body}`, "700 20px Unbounded", "600 20px Unbounded", "500 20px 'Golos Text'", "600 20px 'Golos Text'",
+    "20px 'Marck Script'", "italic 600 20px Lora", "italic 400 20px Lora"];
+  const ready = Promise.all(FONTS.map(fn => document.fonts.load(fn, "Аа1"))).then(() => document.fonts.ready).catch(() => {});
   window.VIDEO = { duration: D, draw, ready, audio: async () => wav(await renderAudio()), play };
   $("play").onclick = play;
   const still = parseFloat(new URLSearchParams(location.search).get("t"));

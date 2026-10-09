@@ -9,7 +9,7 @@ import { fileURLToPath, pathToFileURL } from "url";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const args = process.argv.slice(2);
-const story = args[0] || "latte";
+const story = args[0] || "paper";
 const opt = (k, d) => { const i = args.indexOf("--" + k); return i > 0 ? +args[i + 1] : d; };
 const fps = opt("fps", 30), scale = opt("scale", 2);
 const out = path.join(here, "out"); fs.mkdirSync(out, { recursive: true });

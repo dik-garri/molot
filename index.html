@@ -7,7 +7,7 @@
 <meta name="description" content="Адвент-календарь из 24 дрип-пакетов кофе: 24 темы благодарности Богу, стихи в Синодальном переводе и три дизайн-направления наклеек.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Forum&family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Manrope:wght@600;700&family=Unbounded:wght@600;700&family=PT+Serif:ital,wght@0,400;0,700;1,400&family=Yeseva+One&family=Kurale&family=Philosopher:ital,wght@0,400;0,700;1,400&family=Marck+Script&family=Lora:ital,wght@1,400;1,600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/site.css?v=5">
+<link rel="stylesheet" href="css/site.css?v=8">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cellipse cx='16' cy='16' rx='11' ry='14' fill='%232A1B14' transform='rotate(25 16 16)'/%3E%3Cpath d='M11 6 Q19 16 21 26' stroke='%23D3D0B9' stroke-width='2' fill='none'/%3E%3C/svg%3E">
 </head>
 <body>
@@ -21,8 +21,8 @@
       <div class="ref">«Вкусите, и увидите, как благ Господь!» — Пс 33:9</div>
       <ul class="facts">
         <li><b>24</b> дара Его прихода</li>
-        <li><b>5</b> дизайн-направлений</li>
-        <li><b>25</b> готовых наклеек на пробу</li>
+        <li><b>2</b> дизайн-направления</li>
+        <li><b>10</b> наклеек на пробу · 80×95 мм</li>
         <li>Синодальный перевод</li>
       </ul>
     </div>
@@ -30,10 +30,7 @@
       <div class="box-top">
         <span class="eyebrow">Так выглядит коробка</span>
         <div class="switch" role="group" aria-label="Дизайн-направление в коробке">
-          <button type="button" data-style="latte" aria-pressed="true">Пенка</button>
-          <button type="button" data-style="paper" aria-pressed="false">Бумага</button>
-          <button type="button" data-style="lino" aria-pressed="false">Гравюра</button>
-          <button type="button" data-style="glass" aria-pressed="false">Витраж</button>
+          <button type="button" data-style="paper" aria-pressed="true">Бумага</button>
           <button type="button" data-style="aqua" aria-pressed="false">Акварель</button>
         </div>
       </div>
@@ -64,8 +61,8 @@
   <section class="section" id="designs">
     <div class="section-head">
       <div class="eyebrow">Дизайн · первые пять дней</div>
-      <h2>Пять направлений на выбор</h2>
-      <p>Одна и та же тема в пяти разных языках. Все наклейки ниже сгенерированы кодом в векторе (SVG), пропорция 3:4, QR-коды рабочие — можно проверить телефоном прямо с экрана.</p>
+      <h2>Два направления</h2>
+      <p>В каждой наклейке — тема дня, герои и связь с Рождеством: сюжет из евангельской истории и рождественский декор. Обе версии нарисованы по одной сцене, формат наклейки 80×95 мм, QR-коды рабочие — можно проверить телефоном прямо с экрана.</p>
     </div>
     <div id="directions"></div>
   </section>
@@ -73,15 +70,12 @@
   <section class="section" id="video">
     <div class="section-head">
       <div class="eyebrow">Видео · 9:16</div>
-      <h2>По ролику на каждый стиль</h2>
-      <p>Короткие вертикальные ролики для Reels, Shorts и сторис: 16 секунд, 1080×1920, со звуком. Сцена наклейки оживает, затем проявляется подпись и печатается стих. Всё собирается кодом из тех же наклеек, поэтому так же можно сделать ролик на каждый из 24 дней.</p>
+      <h2>Ролики для Instagram</h2>
+      <p>Вертикальные ролики для Reels и сторис: 16 секунд, 1080×1920, со звуком. Сцена наклейки собирается слой за слоем, затем проявляется подпись и печатается стих. Всё собирается кодом из тех же наклеек, поэтому так же можно сделать ролик на каждый из 24 дней.</p>
     </div>
     <div class="videos">
-      <figure><video src="video/out/latte.mp4" poster="video/out/latte.jpg" controls playsinline preload="none"></video><figcaption>Пенка · день 1 · живая вода</figcaption></figure>
-      <figure><video src="video/out/paper.mp4" poster="video/out/paper.jpg" controls playsinline preload="none"></video><figcaption>Бумага · день 2 · свет во тьме</figcaption></figure>
-      <figure><video src="video/out/lino.mp4" poster="video/out/lino.jpg" controls playsinline preload="none"></video><figcaption>Гравюра · день 5 · дружба</figcaption></figure>
-      <figure><video src="video/out/glass.mp4" poster="video/out/glass.jpg" controls playsinline preload="none"></video><figcaption>Витраж · день 3 · Дух Святой</figcaption></figure>
-      <figure><video src="video/out/aqua.mp4" poster="video/out/aqua.jpg" controls playsinline preload="none"></video><figcaption>Акварель · день 4 · Бог стал человеком</figcaption></figure>
+      <figure><video src="video/out/paper.mp4" poster="video/out/paper.jpg" controls playsinline preload="none"></video><figcaption>Бумага · день 2 · пастухи и ангел</figcaption></figure>
+      <figure><video src="video/out/aqua.mp4" poster="video/out/aqua.jpg" controls playsinline preload="none"></video><figcaption>Акварель · день 4 · вертеп</figcaption></figure>
     </div>
   </section>
 
@@ -128,20 +122,17 @@
       <table class="matrix">
         <thead><tr><th>Направление</th><th>Лучший инструмент</th><th>Что даёт эффект «вау»</th></tr></thead>
         <tbody>
-          <tr><td><b>Пенка</b></td><td>Blender (финал), SVG (эскизы)</td><td>Фотореалистичная чашка сверху: блеск керамики, пузырьки в пене, тень от ручки. Рисунок пены берём из SVG как текстуру.</td></tr>
           <tr><td><b>Бумага</b></td><td>Blender или SVG</td><td>Слои из SVG превращаются в листы бумаги и раздвигаются по глубине. Свет сбоку даёт настоящие тени между слоями, как у бумажной диорамы.</td></tr>
-          <tr><td><b>Гравюра</b></td><td>Только SVG</td><td>Плоская двух-трёхцветная печать на крафте. Потёртость краски и волокна бумаги — фильтрами. В печати можно сделать настоящей шелкографией.</td></tr>
-          <tr><td><b>Витраж</b></td><td>SVG, по желанию Blender</td><td>Цветные стёкла в свинцовых перемычках. В Blender — стекло с подсветкой сзади: цветные блики и свечение. В печати хорошо работает глянцевый лак по стёклам.</td></tr>
           <tr><td><b>Акварель</b></td><td>SVG или живая акварель</td><td>Размывки с тёмными краями и следы от чашки сделаны фильтрами. Для финала можно расписать 24 рисунка настоящим кофе, отсканировать, а текст и QR добавить вектором.</td></tr>
         </tbody>
       </table>
     </div>
     <div class="render" id="render" hidden></div>
     <div class="specs">
-      <div><b>Формат наклейки</b>3:4, например 60×80 мм. Вылет под обрез 2 мм, текст не ближе 3 мм к краю.</div>
+      <div><b>Формат наклейки</b>80×95 мм. Вылет под обрез 2 мм, текст не ближе 3 мм к краю. Макет — 320×380 единиц, PNG — 1280×1520 (≈400 dpi).</div>
       <div><b>QR-код</b>Не меньше 15×15 мм, с белым полем вокруг. Короткая ссылка — проще код и надёжнее сканирование.</div>
       <div><b>Файлы для печати</b>PDF с векторным текстом и QR, растровые слои 300 dpi, цвета в CMYK.</div>
-      <div><b>Бумага</b>Для «Гравюры» — крафтовая этикетка (цвета на ней темнеют, нужна тестовая печать). Для «Пенки» и «Бумаги» — матовая белая.</div>
+      <div><b>Бумага для печати</b>Матовая белая этикетка; для «Акварели» хорошо подойдёт фактурная (под акварельную бумагу).</div>
     </div>
   </section>
 
@@ -151,7 +142,7 @@
       <h2>После согласования</h2>
     </div>
     <div class="steps"><ol>
-      <li><div><b>Выбрать направление</b><span>Можно одно целиком или смешать: например, композиции «Бумаги» в палитре «Гравюры».</span></div></li>
+      <li><div><b>Выбрать направление</b><span>«Бумага» или «Акварель» — или обе: например, наклейки в одном стиле, а ролики в другом.</span></div></li>
       <li><div><b>Утвердить 24 темы и тексты</b><span>Поправить формулировки, порядок, обращение на «ты» или «вы».</span></div></li>
       <li><div><b>Отрисовать оставшиеся 19 дней</b><span>По идеям рисунков из карточек тем, в выбранном стиле.</span></div></li>
       <li><div><b>Тестовая печать</b><span>Проверить цвета на выбранной бумаге и сканирование QR с разных телефонов.</span></div></li>
@@ -162,9 +153,9 @@
   <footer>Концепция для согласования. Стихи: Синодальный перевод. Ссылки в QR-кодах пока ведут на демо-страницы этого сайта.</footer>
 </div>
 
-<script src="vendor/qrcode.js?v=5"></script>
-<script src="js/data.js?v=5"></script>
-<script src="js/stickers.js?v=5"></script>
-<script src="js/index.js?v=5"></script>
+<script src="vendor/qrcode.js?v=8"></script>
+<script src="js/data.js?v=8"></script>
+<script src="js/scenes.js?v=8"></script><script src="js/stickers.js?v=8"></script>
+<script src="js/index.js?v=8"></script>
 </body>
 </html>

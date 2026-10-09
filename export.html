@@ -2,11 +2,11 @@
 <html lang="ru"><head><meta charset="utf-8">
 <title>Экспорт наклейки</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Manrope:wght@600;700&family=Unbounded:wght@600;700&family=Golos+Text:wght@500;600&family=PT+Serif:ital,wght@0,400;0,700;1,400&family=Yeseva+One&family=Kurale&family=Philosopher:ital,wght@0,400;0,700;1,400&family=Marck+Script&family=Lora:ital,wght@1,400;1,600&display=swap" rel="stylesheet">
-<style>html,body{margin:0;width:300px;height:400px;overflow:hidden}svg{display:block;width:300px;height:400px}</style>
+<style>html,body{margin:0;width:320px;height:380px;overflow:hidden}svg{display:block;width:320px;height:380px}</style>
 </head><body>
-<script src="vendor/qrcode.js?v=4"></script><script src="js/data.js?v=4"></script><script src="js/stickers.js?v=4"></script>
+<script src="vendor/qrcode.js?v=7"></script><script src="js/data.js?v=7"></script><script src="js/scenes.js?v=7"></script><script src="js/stickers.js?v=7"></script>
 <script>
-// export.html?s=latte|paper|lino&d=1..5 — одна наклейка 300×400 для скриншота в PNG
+// export.html?s=paper|aqua&d=1..5 — одна наклейка 320×380 (80×95 мм) для скриншота в PNG
 const q = new URLSearchParams(location.search);
 const st = STICKER_STYLES.find(s => s.id === q.get("s")) || STICKER_STYLES[0];
 document.body.innerHTML = st.render(THEMES[(+q.get("d") || 1) - 1]);

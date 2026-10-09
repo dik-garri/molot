@@ -4,24 +4,25 @@
 
 **Сайт:** https://dik-garri.github.io/molot/
 
-- `index.html` — концепция для согласования: коробка, 5 дизайн-направлений × 5 наклеек, 24 темы с текстами, производство.
-- `day.html?d=1…24` — страница дня, на которую ведёт QR (`&s=latte|paper|lino|glass|aqua` — стиль картинки для дней 1–5).
-- `sheet.html` — все 25 наклеек на одном листе.
-- `png/` — 25 наклеек в PNG 1200×1600 (≈500 dpi при ширине 60 мм); `export.html?s=latte|paper|lino|glass|aqua&d=1…5` — страница для экспорта.
+- `index.html` — концепция для согласования: коробка, 2 дизайн-направления × 5 наклеек, 24 темы с текстами, производство.
+- `day.html?d=1…24` — страница дня, на которую ведёт QR (`&s=paper|aqua` — стиль картинки для дней 1–5).
+- `sheet.html` — все 10 наклеек на одном листе.
+- `png/` — 10 наклеек в PNG 1280×1520 (≈400 dpi при размере 80×95 мм); `export.html?s=paper|aqua&d=1…5` — страница для экспорта.
 - `js/data.js` — весь контент: темы, текст наклейки, стих (Синодальный перевод), размышление, действие дня, идея рисунка.
-- `js/stickers.js` — генератор наклеек в SVG (направления «Пенка», «Бумага», «Гравюра», «Витраж», «Акварель»).
+- `js/scenes.js` — сцены дней 1–5: герои и рождественские сюжеты (одна сцена — для обоих стилей).
+- `js/stickers.js` — генератор наклеек 80×95 мм в SVG: «Бумага» и «Акварель».
 
 ## Blender
 
 Бумажные наклейки можно отрендерить в объёме из тех же SVG-слоёв:
 
 ```sh
-node blender/export_layers.js 2 /tmp/layers2              # слои дня 2 → отдельные SVG
-blender -b -P blender/paper_render.py -- /tmp/layers2 out.png 160
+node blender/export_layers.js 4 /tmp/layers4              # слои дня 4 → отдельные SVG
+blender -b -P blender/paper_render.py -- /tmp/layers4 out.png 160
 ```
 
-Рендер — 900×1200, Cycles, ~10 с на наклейку. Текст и QR накладываются вектором поверх (`renderPaperHybrid`).
-Поддерживаются фигуры с заливкой; штрихи и маски (птицы, луна дня 4, пар дней 3 и 5) пока в объём не переводятся.
+Рендер — 960×1140, Cycles, ~10 с на наклейку. Текст и QR накладываются вектором поверх (`renderPaperHybrid`).
+Поддерживаются фигуры с заливкой; линии (посохи, верёвка у колодца) в объём не переводятся.
 
 ---
 
@@ -29,13 +30,13 @@ blender -b -P blender/paper_render.py -- /tmp/layers2 out.png 160
 
 ## Видео
 
-Ролики 9:16 (1080×1920, 16 с, со звуком) — по одному на стиль. Устроено по образцу [anim-kit](https://github.com/tima-kho/anim-kit) / anim-kit-studio:
+Ролики 9:16 для Instagram (1080×1920, 16 с, со звуком) — по одному на стиль. Устроено по образцу [anim-kit](https://github.com/tima-kho/anim-kit) / anim-kit-studio:
 сценарий — данные (`video/stories/<стиль>.js`), кадр — функция времени (`VIDEO.draw(t)` в `video/engine.js`), звук синтезируется офлайн (`VIDEO.audio()` → WAV),
 `video/render.mjs` снимает кадры в headless Chrome и склеивает их с звуком через ffmpeg.
 
 ```sh
 cd video && npm install
-node render.mjs latte          # → video/out/latte.mp4  (latte | paper | lino | glass | aqua)
+node render.mjs paper          # → video/out/paper.mp4  (paper | aqua)
 ```
 
-`video/player.html?story=latte` — просмотр в браузере со звуком; `&t=6` — один кадр для проверки.
+`video/player.html?story=paper` — просмотр в браузере со звуком; `&t=6` — один кадр для проверки.
