@@ -177,26 +177,31 @@
     return s;
   }
 
-  function renderLatte(th) {
+  // o.art(id, p) — подменить рисунок (для видео); o.text — прозрачность подписи и QR
+  function renderLatte(th, o = {}) {
     const d = th.day, p = LATTE[d], id = `la${d}`;
     let s = latteDefs(id, p);
     s += `<rect width="300" height="400" fill="${p.bg}"/><rect width="300" height="400" filter="url(#${id}-grain)" opacity="${p.dark ? 0.6 : 1}"/>`;
-    if (d === 4) s += latteStars(44, false);
-    if (d === 5) {
-      s += latteCup(id, "a", 90, 156, 58, latteFoam[5](90, 16), { saucer: false, handle: 205 });
-      s += latteCup(id, "b", 210, 156, 58, latteFoam[5](210, -16), { saucer: false, handle: -25 });
-    } else {
-      s += latteCup(id, "a", 150, 150, 88, latteFoam[d](), d === 4 ? { foamFilter: "gal", overlay: latteStars(7, true) } : {});
+    if (o.art) s += o.art(id, p);
+    else {
+      if (d === 4) s += latteStars(44, false);
+      if (d === 5) {
+        s += latteCup(id, "a", 90, 156, 58, latteFoam[5](90, 16), { saucer: false, handle: 205 });
+        s += latteCup(id, "b", 210, 156, 58, latteFoam[5](210, -16), { saucer: false, handle: -25 });
+      } else {
+        s += latteCup(id, "a", 150, 150, 88, latteFoam[d](), d === 4 ? { foamFilter: "gal", overlay: latteStars(7, true) } : {});
+      }
     }
     // текст
     const ink = p.ink;
     s += T(22, 44, String(d), { font: "Cormorant Garamond", size: 36, weight: 600, fill: ink });
     s += T(23, 64, "ДЕКАБРЯ", { font: "Manrope", size: 7, weight: 700, ls: 2, fill: ink, op: 0.7 });
+    s += `<g opacity="${o.text ?? 1}">`;
     s += T(22, 302, window.THANKS, { font: "Cormorant Garamond", italic: true, size: 19, weight: 500, fill: ink });
     const fs = fit(th.sticker, 31, 178, 0.47);
     th.sticker.forEach((l, i) => s += T(21, 333 + i * fs * 0.98, l, { font: "Cormorant Garamond", size: fs, weight: 700, fill: ink }));
     s += T(23, 333 + (th.sticker.length - 1) * fs * 0.98 + 22, th.ref.toUpperCase(), { font: "Manrope", size: 8.5, weight: 700, ls: 1.6, fill: ink, op: 0.72 });
-    s += qr(window.dayUrl(d), 210, 300, 70, "#24150D", p.dark ? "#F3EAD8" : "#FFFBF5");
+    s += qr(window.dayUrl(d), 210, 300, 70, "#24150D", p.dark ? "#F3EAD8" : "#FFFBF5") + `</g>`;
     return svg(s, `Наклейка «Пенка», день ${d}: ${th.topic}`);
   }
 
@@ -329,15 +334,16 @@
     }
   };
 
-  function paperText(th, p, L) {
+  function paperText(th, p, L, op = 1) {
     const d = th.day;
     let s = "";
     s += T(44, 50.5, String(d), { font: "Unbounded", size: 17, weight: 700, anchor: "middle", fill: p.dark ? "#222A47" : "#FFF7EC" });
+    s += `<g opacity="${op}">`;
     s += T(24, 300, window.THANKS, { font: "Golos Text", size: 13, weight: 500, fill: p.ink, op: 0.85 });
     const fs = fit(th.sticker, 21, 176, 0.76);
     th.sticker.forEach((l, i) => s += T(23, 327 + i * fs * 1.18, l, { font: "Unbounded", size: fs, weight: 600, fill: p.ink }));
     s += T(24, 327 + (th.sticker.length - 1) * fs * 1.18 + 22, th.ref, { font: "Golos Text", size: 10, weight: 600, fill: p.ink, op: 0.65 });
-    s += L(`<g transform="rotate(-2 244 326)">${qr(window.dayUrl(d), 208, 290, 72, "#24150D", "#FFFDF8")}</g>`);
+    s += L(`<g transform="rotate(-2 244 326)">${qr(window.dayUrl(d), 208, 290, 72, "#24150D", "#FFFDF8")}</g>`) + `</g>`;
     return s;
   }
 
@@ -349,15 +355,16 @@
       `Наклейка «Бумага», рендер Blender, день ${d}: ${th.topic}`);
   }
 
-  function renderPaper(th) {
+  // o.scene(L) — подменить сцену в арке (для видео); o.text — прозрачность подписи и QR
+  function renderPaper(th, o = {}) {
     const d = th.day, p = PAPER[d], id = `pa${d}`;
     const L = c => `<g filter="url(#${id}-pl)">${c}</g>`;
     let s = paperDefs(id);
     s += `<rect width="300" height="400" fill="${p.frame}"/>`;
-    s += `<g clip-path="url(#${id}-arch)">${paperScene[d](L).replace(/__ID__/g, id)}</g>`;
+    s += `<g clip-path="url(#${id}-arch)">${(o.scene ? o.scene(L, id) : paperScene[d](L)).replace(/__ID__/g, id)}</g>`;
     s += `<g filter="url(#${id}-fr)"><path fill-rule="evenodd" d="M0,0 H300 V400 H0Z ${ARCH}" fill="${p.frame}"/></g>`;
     s += L(`<circle cx="44" cy="44" r="21" fill="${p.badge}"/>`);
-    s += paperText(th, p, L);
+    s += paperText(th, p, L, o.text ?? 1);
     return svg(s, `Наклейка «Бумага», день ${d}: ${th.topic}`);
   }
 
@@ -480,7 +487,8 @@
     return `<g transform="translate(${x},${y}) rotate(${r})"><ellipse rx="4.2" ry="2.8" fill="${c}"/><path d="M-3.4,0 Q0,-1.6 3.4,0" stroke="${KRAFT}" stroke-width=".8" fill="none"/></g>`;
   }
 
-  function renderLino(th) {
+  // o.art(id, A) — подменить рисунок в медальоне (для видео); o.text — прозрачность подписи и QR
+  function renderLino(th, o = {}) {
     const d = th.day, id = `li${d}`, A = LINO[d];
     let s = linoDefs(id);
     s += `<rect width="300" height="400" fill="${KRAFT}"/>`;
@@ -489,7 +497,7 @@
     ink += `<rect x="9" y="9" width="282" height="382" fill="none" stroke="${INK}" stroke-width="2.6"/><rect x="15" y="15" width="270" height="370" fill="none" stroke="${INK}" stroke-width=".9"/>`;
     [[15, 15], [285, 15], [15, 385], [285, 385]].forEach(([x, y]) => ink += `<rect x="${x - 4}" y="${y - 4}" width="8" height="8" fill="${INK}" transform="rotate(45 ${x} ${y})"/>`);
     ink += `<circle cx="150" cy="140" r="97" fill="${INK}"/><circle cx="150" cy="140" r="92.5" fill="none" stroke="${CREAM}" stroke-width="1.1"/>`;
-    ink += `<g clip-path="url(#${id}-med)">${linoArt[d](id, A)}</g>`;
+    ink += `<g clip-path="url(#${id}-med)">${o.art ? o.art(id, A) : linoArt[d](id, A)}</g>`;
     // лента
     ink += `<path d="M58,228 H86 V252 H58 L66,240Z" fill="${INK}"/><path d="M242,228 H214 V252 H242 L234,240Z" fill="${INK}"/>`;
     ink += `<path d="M78,222 H222 V246 H78Z" fill="${A}" stroke="${INK}" stroke-width="1.6"/>`;
@@ -497,12 +505,13 @@
     s += `<g filter="url(#${id}-wear)">${ink}</g>`;
     s += T(150, 238.5, `${d} ДЕКАБРЯ`, { font: "PT Serif", size: 10.5, weight: 700, ls: 2.4, anchor: "middle", fill: d === 4 ? INK : CREAM });
     s += T(150, 31.5, "АДВЕНТ · 24 ПОВОДА БЛАГОДАРИТЬ", { font: "PT Serif", size: 6.4, weight: 700, ls: 1.8, anchor: "middle", fill: INK, op: 0.85 });
+    s += `<g opacity="${o.text ?? 1}">`;
     s += T(26, 282, window.THANKS.toUpperCase(), { font: "PT Serif", size: 10, weight: 700, ls: 1.6, fill: INK });
     const fs = fit(th.sticker, 27, 170, 0.62);
     th.sticker.forEach((l, i) => s += T(25, 309 + i * fs * 1.08, l, { font: "Yeseva One", size: fs, fill: INK }));
     s += T(26, 309 + (th.sticker.length - 1) * fs * 1.08 + 21, th.ref, { font: "PT Serif", size: 11, italic: true, fill: INK, op: 0.85 });
     s += qr(window.dayUrl(d), 210, 266, 66, INK, CREAM);
-    s += T(243, 346, "наведи камеру", { font: "PT Serif", size: 7, italic: true, anchor: "middle", fill: INK, op: 0.8 });
+    s += T(243, 346, "наведи камеру", { font: "PT Serif", size: 7, italic: true, anchor: "middle", fill: INK, op: 0.8 }) + `</g>`;
     let beans = "";
     for (let i = 0; i < 11; i++) beans += bean(40 + i * 22, 370, i % 2 ? 25 : -25, INK);
     s += `<g filter="url(#${id}-wear)">${beans}</g>`;
@@ -623,7 +632,8 @@
     }
   };
 
-  function renderGlass(th) {
+  // o.art() — подменить витраж в окне, o.glow — сила подсветки (для видео); o.text — прозрачность подписи и QR
+  function renderGlass(th, o = {}) {
     const d = th.day, id = `gl${d}`;
     let s = `<defs>
       <clipPath id="${id}-win"><path d="${WIN}"/></clipPath>
@@ -633,7 +643,7 @@
       <filter id="${id}-mottle" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".09" numOctaves="3" seed="${d * 5}"/><feColorMatrix values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1.1 -.5"/></filter>
     </defs>`;
     s += `<rect width="300" height="400" fill="${LEAD}"/>`;
-    s += `<g clip-path="url(#${id}-win)">${GLASS[d].art()}</g>`;
+    s += `<g clip-path="url(#${id}-win)">${o.art ? o.art() : GLASS[d].art()}</g>`;
     s += gP(WIN, "none", `stroke-width="4"`);
     // табличка с текстом: два стекла
     s += gP("M14,282 H200 V386 H14Z", "#F1E1B8") + gP("M200,282 H286 V386 H200Z", "#F7EFDC");
@@ -641,15 +651,16 @@
     s += gC(34, 34, 17, "#E9B455") + gC(266, 34, 17, "#E9B455");
     s += gP("M266,22 C276,26 276,42 266,46 C256,42 256,26 266,22Z", "#6B4226") + gL("M266,24 C262,32 270,36 266,44");
     // свет и фактура стекла
-    s += `<g clip-path="url(#${id}-glass)"><rect width="300" height="400" fill="url(#${id}-glow)"/>` +
+    s += `<g clip-path="url(#${id}-glass)"><rect width="300" height="400" fill="url(#${id}-glow)" opacity="${o.glow ?? 1}"/>` +
       `<rect width="300" height="400" filter="url(#${id}-streak)" opacity=".35"/><rect width="300" height="400" filter="url(#${id}-mottle)" opacity=".22"/></g>`;
     s += T(34, 40, String(d), { font: "Kurale", size: 17, anchor: "middle", fill: LEAD });
+    s += `<g opacity="${o.text ?? 1}">`;
     s += T(26, 300, `${d} ДЕКАБРЯ`, { font: "Philosopher", size: 8.5, weight: 700, ls: 2, fill: "#7A2E1E" });
     s += T(26, 318, window.THANKS, { font: "Philosopher", size: 13.5, italic: true, fill: LEAD });
     const fs = fit(th.sticker, 21, 166, 0.5);
     th.sticker.forEach((l, i) => s += T(25, 340 + i * fs * 1.02, l, { font: "Kurale", size: fs, fill: LEAD }));
     s += T(26, 377, th.ref, { font: "Philosopher", size: 10, fill: LEAD, op: 0.8 });
-    s += qr(window.dayUrl(d), 207, 298, 72, LEAD, "#FFFDF7");
+    s += qr(window.dayUrl(d), 207, 298, 72, LEAD, "#FFFDF7") + `</g>`;
     return svg(s, `Наклейка «Витраж», день ${d}: ${th.topic}`);
   }
 
@@ -770,22 +781,31 @@
     }
   };
 
-  function renderAqua(th) {
+  // o.art(K, id) — подменить рисунок (для видео); o.text — прозрачность подписи и QR
+  function renderAqua(th, o = {}) {
     const d = th.day, id = `wa${d}`, K = wcKit(id);
     let s = wcDefs(id, d);
     s += `<rect width="300" height="400" fill="${WC.paper}"/><rect width="300" height="400" filter="url(#${id}-paper)"/>`;
-    s += AQUA[d](K).replace(/__ID__/g, id);
+    s += (o.art ? o.art(K, id) : AQUA[d](K)).replace(/__ID__/g, id);
     s += `<rect width="300" height="400" fill="url(#${id}-vig)"/>`;
     s += T(22, 44, `${d} декабря`, { font: "Marck Script", size: 24, fill: WC.c2 });
+    s += `<g opacity="${o.text ?? 1}">`;
     s += T(22, 302, window.THANKS, { font: "Marck Script", size: 22, fill: WC.ink });
     const fs = fit(th.sticker, 27, 174, 0.58);
     th.sticker.forEach((l, i) => s += T(21, 331 + i * fs * 1.04, l, { font: "Lora", size: fs, weight: 600, italic: true, fill: WC.ink }));
     s += T(22, 331 + (th.sticker.length - 1) * fs * 1.04 + 22, th.ref, { font: "Lora", size: 10.5, italic: true, fill: WC.c2 });
-    s += qr(window.dayUrl(d), 212, 298, 68, WC.ink, WC.paper);
+    s += qr(window.dayUrl(d), 212, 298, 68, WC.ink, WC.paper) + `</g>`;
     return svg(s, `Наклейка «Акварель кофе», день ${d}: ${th.topic}`);
   }
 
   window.STICKER_INTERNALS = { paperScene, PAPER, ARCH, cupSide, renderPaperHybrid };
+  // Всё, из чего собираются анимированные версии наклеек (video/)
+  window.SK = { f, rng, heart, star4, dropPath, cupSide, svg,
+    LATTE, latteCup, latteFoam, latteStars,
+    PAPER, ARCH,
+    INK, CREAM, KRAFT, LINO, seed, sunburst,
+    LEAD, gP, gE, gC, gS, gL, poly, glassCup, gStar, gHeart,
+    WC, wcCup, heartPath: heart };
   window.STICKER_STYLES = [
     { id: "latte", name: "Пенка", render: renderLatte },
     { id: "paper", name: "Бумага", render: renderPaper },

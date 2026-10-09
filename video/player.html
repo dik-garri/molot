@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Видео наклейки — Вкусите и увидите</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Manrope:wght@600;700&family=Unbounded:wght@500;600;700&family=PT+Serif:ital,wght@0,400;0,700;1,400&family=Yeseva+One&family=Kurale&family=Philosopher:ital,wght@0,400;0,700;1,400&family=Marck+Script&family=Lora:ital,wght@0,400;0,500;1,400;1,600&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; background: #111; }
+  body { display: grid; place-items: center; min-height: 100vh; }
+  /* кадр 9:16; при рендере масштаб 2 → 1080×1920 */
+  #frame { position: relative; width: 540px; height: 960px; overflow: hidden; color: var(--ink); }
+  #bg { position: absolute; inset: 0; background: var(--bg); }
+  #eyebrow { position: absolute; top: 46px; left: 0; right: 0; text-align: center; font: 600 13px/1 var(--body); letter-spacing: .22em; text-transform: uppercase; opacity: .85; }
+  #card { position: absolute; left: 55px; top: 92px; width: 430px; height: 573px; transform-origin: 50% 60%; filter: drop-shadow(0 22px 30px rgba(0, 0, 0, .35)); }
+  #card svg { width: 100%; height: 100%; display: block; border-radius: 6px; }
+  #verse { position: absolute; left: 48px; right: 48px; top: 698px; font: 400 21px/1.42 var(--display); text-align: center; min-height: 120px; }
+  #ref { position: absolute; left: 0; right: 0; top: 842px; text-align: center; font: 600 13px/1 var(--body); letter-spacing: .12em; color: var(--accent); }
+  #cta { position: absolute; left: 0; right: 0; bottom: 0; padding: 0 30px 26px; text-align: center; font: 400 16px/1.35 var(--body); }
+  #cta b { color: var(--accent); font-weight: 600; }
+  #fade { position: absolute; inset: 0; background: #000; opacity: 0; pointer-events: none; }
+  #play { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); font: 600 18px var(--body); padding: 16px 26px; border: 0; border-radius: 999px; background: #fff; color: #222; cursor: pointer; box-shadow: 0 10px 30px rgba(0, 0, 0, .4); }
+  .render #play { display: none; }
+</style>
+</head>
+<body>
+<div id="frame">
+  <div id="bg"></div>
+  <div id="eyebrow"></div>
+  <div id="card"></div>
+  <div id="verse"></div>
+  <div id="ref"></div>
+  <div id="cta"></div>
+  <div id="fade"></div>
+  <button id="play" type="button">▶ Смотреть со звуком</button>
+</div>
+<script src="../vendor/qrcode.js"></script>
+<script src="../js/data.js"></script>
+<script src="../js/stickers.js"></script>
+<script>
+  // ?story=latte — какой сценарий; ?render=1 — без кнопки (для покадрового рендера); ?t=5 — один кадр
+  const Q = new URLSearchParams(location.search);
+  if (Q.get("render")) document.body.classList.add("render");
+  document.write(`<script src="stories/${(Q.get("story") || "latte").replace(/[^a-z]/g, "")}.js"><\/script>`);
+</script>
+<script src="engine.js"></script>
+</body>
+</html>

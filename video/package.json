@@ -1,0 +1,7 @@
+{
+  "name": "molot-video",
+  "private": true,
+  "type": "module",
+  "description": "Покадровый рендер видео наклеек в MP4",
+  "dependencies": { "puppeteer-core": "^23.0.0" }
+}

@@ -26,3 +26,16 @@ blender -b -P blender/paper_render.py -- /tmp/layers2 out.png 160
 ---
 
 [Все проекты →](https://dik-garri.github.io/garry/)
+
+## Видео
+
+Ролики 9:16 (1080×1920, 16 с, со звуком) — по одному на стиль. Устроено по образцу [anim-kit](https://github.com/tima-kho/anim-kit) / anim-kit-studio:
+сценарий — данные (`video/stories/<стиль>.js`), кадр — функция времени (`VIDEO.draw(t)` в `video/engine.js`), звук синтезируется офлайн (`VIDEO.audio()` → WAV),
+`video/render.mjs` снимает кадры в headless Chrome и склеивает их с звуком через ffmpeg.
+
+```sh
+cd video && npm install
+node render.mjs latte          # → video/out/latte.mp4  (latte | paper | lino | glass | aqua)
+```
+
+`video/player.html?story=latte` — просмотр в браузере со звуком; `&t=6` — один кадр для проверки.
