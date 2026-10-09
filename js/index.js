@@ -36,6 +36,24 @@
       risk: "на печати без флуоресцентных красок свечение будет скромнее, чем на экране",
       sw: ["#12082A", "#FF4FD8", "#3DF5FF", "#FFE45E", "#5CFF9D"]
     },
+    anime: {
+      kicker: "По референсу · аниме",
+      idea: "Живописная аниме-иллюстрация: герои с большими выразительными глазами и светотенью, небо с облаками, подсвеченными снизу, лучи света, вечерний город с огнями. Внизу — кремовая панель, ключевое слово оранжевым.",
+      mood: "кинематографично, тепло, «как в мультфильме»",
+      tech: "SVG; для большей детализации — картинка нейросетью, текст и QR кодом",
+      plus: "сильные эмоции героев, самый «сюжетный» вид",
+      risk: "кодом не добраться до живописности нейросетевого референса",
+      sw: ["#1B2569", "#F2A12E", "#FBF3E2", "#7A5CA6", "#FFD28C"]
+    },
+    flat: {
+      kicker: "По референсу · флэт с зерном",
+      idea: "Плоская векторная иллюстрация с градиентами и шумом, сине-фиолетовая гамма и кислотный лайм. Дудлы, мазки кистью, ключевое слово выделено «маркером».",
+      mood: "современно, бодро, «как в приложении»",
+      tech: "SVG целиком — стиль хорошо ложится на код",
+      plus: "ближе всего к визуальному языку молодёжи; легко сделать все 24 дня в одном ключе",
+      risk: "лица условные, без черт — меньше эмоций, чем в аниме",
+      sw: ["#2D3BE0", "#6A45E0", "#D9FF3B", "#141A6B", "#F4EEE0"]
+    },
     aqua: {
       kicker: "Направление 2 · акварель кофе",
       idea: "Тот же сюжет, будто нарисованный самим кофе: сепиевые размывки по хлопковой бумаге, контуры тушью, белила для света. В углу — рождественская еловая веточка.",
@@ -51,7 +69,7 @@
   const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
   let n = 0;
   // Делает id внутри SVG уникальными, когда одна наклейка встречается на странице несколько раз
-  const uniq = s => { const p = "u" + (n++); return s.replace(/\b(pa|wa|co|px|ne)(\d+)-/g, `$1$2${p}-`); };
+  const uniq = s => { const p = "u" + (n++); return s.replace(/\b(pa|wa|co|px|ne|an|fl)(\d+)-/g, `$1$2${p}-`); };
   const styleById = id => STICKER_STYLES.find(s => s.id === id);
 
   // коробка
@@ -84,7 +102,8 @@
       <div class="strip">${THEMES.slice(0, st.days || 5).map(t => `<figure>${uniq(st.render(t))}<figcaption>${t.day} · ${esc(t.topic)}</figcaption></figure>`).join("")}</div>
     </article>`;
   };
-  document.getElementById("directions").innerHTML = STICKER_STYLES.filter(st => !st.youth).map(dirHtml).join("");
+  document.getElementById("directions").innerHTML = STICKER_STYLES.filter(st => !st.youth && !st.illus).map(dirHtml).join("");
+  document.getElementById("illus-directions").innerHTML = STICKER_STYLES.filter(st => st.illus).map(dirHtml).join("");
   document.getElementById("youth-directions").innerHTML = STICKER_STYLES.filter(st => st.youth).map(dirHtml).join("");
 
   // темы

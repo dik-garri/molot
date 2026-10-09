@@ -393,6 +393,7 @@
   }
 
   window.STICKER_SIZE = { W, H, mm: [80, 95] };
+  window.STK = { T, fit, qr, star5, svg, f, esc, toHsl, fromHsl };   // для js/illus.js
   window.STICKER_INTERNALS = { PAPER, ARCH, garland, renderPaperHybrid };
   window.STICKER_STYLES = [
     { id: "paper", name: "Бумага", render: renderPaper },
