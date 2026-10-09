@@ -9,6 +9,33 @@
       risk: "самая трудоёмкая отрисовка; 24 сцены нужно держать в одной палитре",
       sw: ["#F3E7D3", "#1F2645", "#E7B48A", "#3E6C9A", "#2F5D3A", "#B3243A"]
     },
+    comic: {
+      kicker: "Молодёжный · комикс",
+      idea: "Поп-арт: сюжет нарисован как кадр комикса — толстый чёрный контур, сочные цвета, растровые точки. Номер дня во взрывной звезде, над панелью — гирлянда-лампочки.",
+      mood: "дерзко, весело, ярко",
+      tech: "SVG; тот же сюжет, что в основных стилях",
+      plus: "считывается за секунду, отлично смотрится в сторис",
+      risk: "может показаться слишком «детским» для старших",
+      sw: ["#4CC9F0", "#FF5DA2", "#FFD23F", "#FF3D7F", "#141414"]
+    },
+    pixel: {
+      kicker: "Молодёжный · ретро-игра",
+      idea: "Каждый день — уровень игры: сюжет в пиксель-арте, сверху «ДЕНЬ 1/24» и сердечки, снизу диалоговое окно как в RPG. Пиксельный снег и гирлянда.",
+      mood: "игровое, ностальгическое, «как в 8-бит»",
+      tech: "SVG; пикселизация фильтром — любой сюжет становится пиксель-артом",
+      plus: "календарь превращается в прохождение: 24 уровня до Рождества",
+      risk: "мелкий пиксельный шрифт нужно проверять в печати",
+      sw: ["#1A1C3A", "#FF5C8A", "#FFD23F", "#5CE1E6", "#FFFFFF"]
+    },
+    neon: {
+      kicker: "Молодёжный · неон",
+      idea: "Неоновая вывеска на тёмной стене: светящиеся контуры героев, надпись «Спасибо, Иисус» неоновым почерком, огоньки и звезда по рамке.",
+      mood: "атмосферно, вечерне, как в кофейне",
+      tech: "SVG; в печати — флуоресцентные краски",
+      plus: "самый «инстаграмный» вид, сильно смотрится в темноте",
+      risk: "на печати без флуоресцентных красок свечение будет скромнее, чем на экране",
+      sw: ["#12082A", "#FF4FD8", "#3DF5FF", "#FFE45E", "#5CFF9D"]
+    },
     aqua: {
       kicker: "Направление 2 · акварель кофе",
       idea: "Тот же сюжет, будто нарисованный самим кофе: сепиевые размывки по хлопковой бумаге, контуры тушью, белила для света. В углу — рождественская еловая веточка.",
@@ -24,7 +51,7 @@
   const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
   let n = 0;
   // Делает id внутри SVG уникальными, когда одна наклейка встречается на странице несколько раз
-  const uniq = s => { const p = "u" + (n++); return s.replace(/\b(pa|wa)(\d+)-/g, `$1$2${p}-`); };
+  const uniq = s => { const p = "u" + (n++); return s.replace(/\b(pa|wa|co|px|ne)(\d+)-/g, `$1$2${p}-`); };
   const styleById = id => STICKER_STYLES.find(s => s.id === id);
 
   // коробка
@@ -45,7 +72,7 @@
   document.getElementById("drip-sticker").innerHTML = uniq(styleById("paper").render(THEMES[0]));
 
   // направления
-  document.getElementById("directions").innerHTML = STICKER_STYLES.map(st => {
+  const dirHtml = st => {
     const D = DIRECTIONS[st.id];
     return `<article class="direction" id="dir-${st.id}">
       <div class="dir-head">
@@ -54,9 +81,11 @@
           <dl><dt>Настроение</dt><dd>${D.mood}</dd><dt>Техника</dt><dd>${D.tech}</dd><dt>Сильная сторона</dt><dd>${D.plus}</dd><dt>Риск</dt><dd>${D.risk}</dd></dl>
         </div>
       </div>
-      <div class="strip">${THEMES.slice(0, 5).map(t => `<figure>${uniq(st.render(t))}<figcaption>${t.day} · ${esc(t.topic)}</figcaption></figure>`).join("")}</div>
+      <div class="strip">${THEMES.slice(0, st.days || 5).map(t => `<figure>${uniq(st.render(t))}<figcaption>${t.day} · ${esc(t.topic)}</figcaption></figure>`).join("")}</div>
     </article>`;
-  }).join("");
+  };
+  document.getElementById("directions").innerHTML = STICKER_STYLES.filter(st => !st.youth).map(dirHtml).join("");
+  document.getElementById("youth-directions").innerHTML = STICKER_STYLES.filter(st => st.youth).map(dirHtml).join("");
 
   // темы
   document.getElementById("theme-list").innerHTML = THEMES.map(t => `

@@ -212,10 +212,194 @@
     return svg(s, `Наклейка «Акварель кофе», день ${d}: ${th.topic}`);
   }
 
+  /* ─────────────────────────── МОЛОДЁЖНЫЕ СТИЛИ (дни 1–3) ─────────────────────────── */
+
+  const toHsl = h => {
+    let [r, g, b] = hx(h).map(v => v / 255);
+    const mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2;
+    if (mx === mn) return [0, 0, l];
+    const d = mx - mn, s = l > .5 ? d / (2 - mx - mn) : d / (mx + mn);
+    const hh = mx === r ? (g - b) / d + (g < b ? 6 : 0) : mx === g ? (b - r) / d + 2 : (r - g) / d + 4;
+    return [hh * 60, s, l];
+  };
+  const fromHsl = (h, s, l) => {
+    const k = n => (n + h / 30) % 12, a = s * Math.min(l, 1 - l);
+    const c = n => Math.round(255 * (l - a * Math.max(-1, Math.min(k(n) - 3, 9 - k(n), 1)))).toString(16).padStart(2, "0");
+    return "#" + c(0) + c(8) + c(4);
+  };
+  // ярче и насыщеннее — для комикса и пикселя
+  const pop = (hex, ks = 1.45, kl = 1.04) => { const [h, s, l] = toHsl(hex); return fromHsl(h, Math.min(1, s * ks + .06), Math.max(.1, Math.min(.93, l * kl))); };
+  const sceneSvg = (sc, item) => sc.layers.map(l => l.filter(it => it.only !== "aqua").map(item).join("")).join("");
+
+  /* ── КОМИКС: поп-арт, толстый контур, растровые точки, гирлянда-лампочки ── */
+  const COMIC = { 1: { bg: "#4CC9F0", accent: "#FF3D7F" }, 2: { bg: "#FF5DA2", accent: "#FFD23F" }, 3: { bg: "#FFD23F", accent: "#3A86FF" } };
+  const BLACK = "#141414";
+  function burst(x, y, r1, r2, n) {
+    return "M" + Array.from({ length: n * 2 }, (_, i) => {
+      const a = -Math.PI / 2 + i * Math.PI / n, r = i % 2 ? r2 : r1 * (1 + (i % 4 === 0 ? .12 : 0));
+      return `${f(x + Math.cos(a) * r)},${f(y + Math.sin(a) * r)}`;
+    }).join(" L") + "Z";
+  }
+  function renderComic(th, o = {}) {
+    const d = th.day, P = COMIC[d], id = `co${d}`, sc = SCENES[d]();
+    let s = `<defs><clipPath id="${id}-pan"><rect x="16" y="16" width="288" height="244" rx="10"/></clipPath>
+      <pattern id="${id}-ht" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(25)"><circle cx="3" cy="3" r="1.25" fill="#000"/></pattern>
+      <pattern id="${id}-bg" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(25)"><circle cx="5" cy="5" r="2.3" fill="#fff"/></pattern></defs>`;
+    s += `<rect width="${W}" height="${H}" fill="${P.bg}"/><rect width="${W}" height="${H}" fill="url(#${id}-bg)" opacity=".28"/>`;
+    s += `<rect x="22" y="22" width="288" height="244" rx="10" fill="${BLACK}"/>`;
+    const item = it => it.sw
+      ? `<path d="${it.d}" fill="none" stroke="${BLACK}" stroke-width="${f(it.sw + 1.4)}" stroke-linecap="round" stroke-linejoin="round"/>`
+      : `<path d="${it.d}" fill="${pop(it.p)}" stroke="${BLACK}" stroke-width="2.3" stroke-linejoin="round"/>`;
+    s += `<g clip-path="url(#${id}-pan)"><g transform="translate(16,16) scale(.9)">${sceneSvg(sc, item)}</g><rect x="16" y="16" width="288" height="244" fill="url(#${id}-ht)" opacity=".12"/></g>`;
+    s += `<rect x="16" y="16" width="288" height="244" rx="10" fill="none" stroke="${BLACK}" stroke-width="4"/>`;
+    // гирлянда-лампочки поверх панели
+    const wire = [[10, 20, 88, 52, 166, 24], [166, 24, 242, 52, 314, 20]], cols = ["#FF4D4D", "#FFD23F", "#2EC27E", "#3A86FF"];
+    let bulbs = "", k = 0;
+    wire.forEach(([x0, y0, cx, cy, x1, y1]) => {
+      bulbs += `<path d="M${x0},${y0} Q${cx},${cy} ${x1},${y1}" fill="none" stroke="${BLACK}" stroke-width="2.4"/>`;
+      for (let t = .12; t < 1; t += .19) {
+        const x = (1 - t) ** 2 * x0 + 2 * (1 - t) * t * cx + t * t * x1, y = (1 - t) ** 2 * y0 + 2 * (1 - t) * t * cy + t * t * y1;
+        bulbs += `<g transform="translate(${f(x)},${f(y)}) rotate(${f((t - .5) * 30)})"><rect x="-3" y="-1" width="6" height="5" fill="#555" stroke="${BLACK}" stroke-width="1.6"/><ellipse cx="0" cy="10" rx="5.2" ry="7.5" fill="${cols[k++ % 4]}" stroke="${BLACK}" stroke-width="2"/><ellipse cx="-1.6" cy="8" rx="1.4" ry="2.6" fill="#fff" opacity=".7"/></g>`;
+      }
+    });
+    s += bulbs;
+    s += `<path d="${burst(42, 46, 28, 19, 11)}" fill="${P.accent}" stroke="${BLACK}" stroke-width="2.6" stroke-linejoin="round"/>`;
+    s += `<text x="42" y="55" text-anchor="middle" font-family="Rubik" font-weight="900" font-size="26" fill="#fff" stroke="${BLACK}" stroke-width="2.6" paint-order="stroke">${d}</text>`;
+    s += `<g opacity="${o.text ?? 1}">`;
+    s += `<g transform="rotate(-2 112 320)"><rect x="20" y="278" width="196" height="88" fill="${BLACK}"/><rect x="14" y="272" width="196" height="88" fill="#fff" stroke="${BLACK}" stroke-width="3"/>`;
+    s += T(26, 292, window.THANKS.toUpperCase(), { font: "Rubik", size: 11, weight: 800, ls: .6, fill: P.accent === "#FFD23F" ? "#E0447A" : P.accent });
+    const up = th.sticker.map(l => l.toUpperCase()), fs = fit(up, 21, 180, .66);
+    up.forEach((l, i) => s += T(25, 315 + i * fs * 1.05, l, { font: "Rubik", size: fs, weight: 900, fill: BLACK }));
+    s += T(26, 352, th.ref, { font: "Rubik", size: 10, weight: 600, fill: BLACK, op: .7 }) + `</g>`;
+    s += `<rect x="232" y="284" width="76" height="76" fill="${BLACK}"/>` + `<g>${qr(window.dayUrl(d), 226, 278, 76, BLACK, "#fff")}</g><rect x="226" y="278" width="76" height="76" fill="none" stroke="${BLACK}" stroke-width="3"/>`;
+    s += `</g>`;
+    return svg(s, `Наклейка «Комикс», день ${d}: ${th.topic}`);
+  }
+
+  /* ── ПИКСЕЛЬ: ретро-игра — пикселизированная сцена, HUD, диалог RPG, пиксельный снег ── */
+  const PIX = { 1: { bg: "#1A1C3A", accent: "#FF5C8A" }, 2: { bg: "#0E1230", accent: "#FFD23F" }, 3: { bg: "#1C1430", accent: "#5CE1E6" } };
+  const PXF = "'Press Start 2P'";
+  function pxHeart(x, y, c, s = 2) {
+    const m = ["0110110", "1111111", "1111111", "0111110", "0011100", "0001000"];
+    let r = "";
+    m.forEach((row, j) => [...row].forEach((v, i) => { if (v === "1") r += `<rect x="${x + i * s}" y="${y + j * s}" width="${s}" height="${s}" fill="${c}"/>`; }));
+    return r;
+  }
+  function renderPixel(th, o = {}) {
+    const d = th.day, P = PIX[d], id = `px${d}`, sc = SCENES[d](), B = 4;
+    let s = `<defs><clipPath id="${id}-scr"><rect x="16" y="30" width="288" height="230"/></clipPath>
+      <filter id="${id}-px" x="0" y="0" width="100%" height="100%" filterUnits="userSpaceOnUse" primitiveUnits="userSpaceOnUse">
+        <feFlood x="${B / 2 - .5}" y="${B / 2 - .5}" width="1" height="1"/><feComposite width="${B}" height="${B}"/><feTile result="a"/>
+        <feComposite in="SourceGraphic" in2="a" operator="in"/><feMorphology operator="dilate" radius="${B / 2}"/></filter>
+      <pattern id="${id}-grid" width="4" height="4" patternUnits="userSpaceOnUse"><rect width="4" height="4" fill="none" stroke="#fff" stroke-width=".3" opacity=".06"/></pattern></defs>`;
+    s += `<rect width="${W}" height="${H}" fill="${P.bg}"/><rect width="${W}" height="${H}" fill="url(#${id}-grid)"/>`;
+    // HUD
+    s += T(16, 22, `ДЕНЬ ${d}/24`, { font: PXF, size: 8, fill: "#fff" });
+    s += [0, 1, 2].map(i => pxHeart(250 + i * 18, 11, P.accent)).join("");
+    // экран со сценой
+    const item = it => it.sw ? `<path d="${it.d}" fill="none" stroke="${pop(it.p, 1.3)}" stroke-width="${it.sw + 1}"/>` : `<path d="${it.d}" fill="${pop(it.p, 1.3)}"/>`;
+    s += `<g clip-path="url(#${id}-scr)"><g filter="url(#${id}-px)"><g transform="translate(16,26) scale(.9)">${sceneSvg(sc, item)}</g></g>`;
+    let a = d * 97; const R = () => (a = (a * 16807) % 2147483647) / 2147483647;
+    for (let i = 0; i < 22; i++) s += `<rect x="${16 + Math.floor(R() * 72) * 4}" y="${32 + Math.floor(R() * 40) * 4}" width="4" height="4" fill="#fff" opacity="${f(.55 + R() * .45)}"/>`;
+    const cols = ["#FF4D4D", "#2EC27E", "#FFD23F", "#3A86FF"];
+    for (let i = 0; i < 18; i++) s += `<rect x="${20 + i * 16}" y="${34 + (i % 2) * 4}" width="6" height="6" fill="${cols[i % 4]}"/><rect x="${23 + i * 16}" y="${30}" width="2" height="${4 + (i % 2) * 4}" fill="#2A3A2A"/>`;
+    s += `</g>`;
+    s += `<rect x="14.5" y="28.5" width="291" height="233" fill="none" stroke="#fff" stroke-width="3"/><rect x="18" y="32" width="284" height="226" fill="none" stroke="${P.accent}" stroke-width="1.5" opacity=".8"/>`;
+    s += `<g opacity="${o.text ?? 1}">`;
+    // диалоговое окно
+    s += `<rect x="12" y="274" width="210" height="96" fill="#0B0B18" stroke="#fff" stroke-width="3"/>`;
+    const tag = th.topic.toUpperCase();
+    s += `<rect x="20" y="266" width="${f(tag.length * 7 + 14)}" height="16" fill="${P.accent}" stroke="#fff" stroke-width="2"/>`;
+    s += T(27, 278, tag, { font: PXF, size: 7, fill: "#0B0B18" });
+    s += T(22, 300, window.THANKS, { font: PXF, size: 9, fill: "#fff" });
+    const fs = fit(th.sticker, 13, 192, 1.0);
+    th.sticker.forEach((l, i) => s += T(22, 324 + i * fs * 1.55, l, { font: PXF, size: fs, fill: P.accent }));
+    s += T(22, 362, th.ref, { font: PXF, size: 6.5, fill: "#9AA0C8" });
+    s += `<path d="M206,356 h10 l-5,6Z" fill="#fff"/>`;
+    s += `<rect x="230" y="280" width="80" height="80" fill="#fff"/>` + qr(window.dayUrl(d), 232, 282, 76, "#0B0B18", "#fff");
+    s += `<rect x="230" y="280" width="80" height="80" fill="none" stroke="${P.accent}" stroke-width="2"/>`;
+    s += T(270, 372, "СКАН", { font: PXF, size: 6, anchor: "middle", fill: "#9AA0C8" }) + `</g>`;
+    return svg(s, `Наклейка «Пиксель», день ${d}: ${th.topic}`);
+  }
+
+  /* ── НЕОН: светящиеся контуры героев на тёмной стене, неоновая надпись, огоньки по рамке ── */
+  const NEON = { pink: "#FF4FD8", cyan: "#3DF5FF", yellow: "#FFE45E", violet: "#B98CFF", green: "#5CFF9D", orange: "#FF9F43", white: "#F6F2FF" };
+  const NEON_BG = { 1: ["#12082A", "#2B0E3F"], 2: ["#070B24", "#1B0F3A"], 3: ["#160826", "#33103E"] };
+  function neonOf(hex) {
+    const [h, s, l] = toHsl(hex);
+    if (l > .8) return NEON.white;
+    if (s < .2) return NEON.violet;
+    if (h < 22 || h >= 330) return NEON.pink;
+    if (h < 48) return NEON.orange;
+    if (h < 72) return NEON.yellow;
+    if (h < 165) return NEON.green;
+    if (h < 260) return NEON.cyan;
+    return NEON.violet;
+  }
+  function renderNeon(th, o = {}) {
+    const d = th.day, id = `ne${d}`, sc = SCENES[d](), [b0, b1] = NEON_BG[d];
+    let s = `<defs><linearGradient id="${id}-bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${b0}"/><stop offset="1" stop-color="${b1}"/></linearGradient>
+      <filter id="${id}-glow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b1"/><feGaussianBlur in="SourceGraphic" stdDeviation="1.6" result="b2"/>
+        <feMerge><feMergeNode in="b1"/><feMergeNode in="b1"/><feMergeNode in="b2"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      <pattern id="${id}-brick" width="40" height="20" patternUnits="userSpaceOnUse"><path d="M0,0 H40 M0,10 H40 M0,0 V10 M20,10 V20" stroke="#fff" stroke-width=".6" opacity=".05" fill="none"/></pattern>
+      <filter id="${id}-grain" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="2" seed="5"/><feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .5 -.3"/></filter>
+      <filter id="${id}-soft" x="-20%" y="-40%" width="140%" height="180%"><feGaussianBlur stdDeviation="3.2"/></filter>
+      <clipPath id="${id}-fr"><rect x="14" y="14" width="292" height="250" rx="16"/></clipPath></defs>`;
+    s += `<rect width="${W}" height="${H}" fill="url(#${id}-bg)"/><rect width="${W}" height="${H}" fill="url(#${id}-brick)"/>`;
+    // фон сцены (холмы, небо) — слабые цветные зоны без контура-трубки
+    let soft = "";
+    sc.layers.forEach(l => l.forEach(it => {
+      if (it.only || it.ink || it.sw) return;
+      const c = neonOf(it.p);
+      soft += `<path d="${it.d}" fill="${c}" opacity=".08"/><path d="${it.d}" fill="none" stroke="${c}" stroke-width="1" opacity=".25"/>`;
+    }));
+    // фигуры рисуются по слоям: каждая перекрывает то, что позади, затем светится своим контуром
+    let layered = "";
+    sc.layers.forEach(l => {
+      let oc = "", tb = "", co = "";
+      l.forEach(it => {
+        if (it.only || !it.ink || it.sw) return;
+        const c = neonOf(it.p);
+        oc += `<path d="${it.d}" fill="${b0}" opacity=".88"/>`;
+        tb += `<path d="${it.d}" fill="none" stroke="${c}" stroke-width="1.9" stroke-linejoin="round"/>`;
+        co += `<path d="${it.d}" fill="none" stroke="#fff" stroke-width=".6" stroke-linejoin="round" opacity=".75"/>`;
+      });
+      l.forEach(it => {
+        if (!it.sw || it.only) return;
+        const c = neonOf(it.p);
+        tb += `<path d="${it.d}" fill="none" stroke="${c}" stroke-width="1.8" stroke-linecap="round"/>`;
+        co += `<path d="${it.d}" fill="none" stroke="#fff" stroke-width=".6" opacity=".7"/>`;
+      });
+      layered += oc + `<g filter="url(#${id}-glow)">${tb}</g>` + co;
+    });
+    s += `<g clip-path="url(#${id}-fr)"><g transform="translate(20,22) scale(.875)">${soft}${layered}</g></g>`;
+    // рамка-вывеска с огоньками и звездой
+    let lights = "";
+    const cols = [NEON.pink, NEON.cyan, NEON.yellow, NEON.green];
+    for (let i = 0; i < 15; i++) lights += `<circle cx="${30 + i * 18.6}" cy="${14 + (i % 2 ? 3 : -1)}" r="2.6" fill="${cols[i % 4]}"/>`;
+    s += `<g filter="url(#${id}-glow)"><rect x="14" y="14" width="292" height="250" rx="16" fill="none" stroke="${NEON.pink}" stroke-width="2"/>${lights}
+      <path d="${star5(160, 14, 11)}" fill="none" stroke="${NEON.yellow}" stroke-width="2" stroke-linejoin="round"/>
+      <circle cx="36" cy="40" r="15" fill="none" stroke="${NEON.cyan}" stroke-width="1.8"/></g>`;
+    s += `<g filter="url(#${id}-glow)">` + T(36, 45.5, String(d), { font: "Unbounded", size: 14, weight: 700, anchor: "middle", fill: NEON.cyan }) + `</g>`;
+    s += `<rect width="${W}" height="${H}" filter="url(#${id}-grain)" opacity=".18"/>`;
+    const fs = fit(th.sticker, 20, 188, .8);
+    const words = c => T(22, 300, window.THANKS, { font: "Pacifico", size: 20, fill: c || NEON.pink }) +
+      th.sticker.map((l, i) => T(22, 328 + i * fs * 1.2, l, { font: "Unbounded", size: fs, weight: 700, fill: c || NEON.white })).join("") +
+      T(23, 328 + (th.sticker.length - 1) * fs * 1.2 + 21, th.ref, { font: "Unbounded", size: 9, weight: 500, fill: c || NEON.cyan });
+    s += `<g opacity="${o.text ?? 1}"><g filter="url(#${id}-soft)" opacity=".9">${words(null).replace(/fill="#F6F2FF"/g, `fill="${NEON.cyan}"`)}</g>${words(null)}`;
+    s += `<g filter="url(#${id}-glow)"><rect x="234" y="282" width="74" height="74" rx="8" fill="none" stroke="${NEON.cyan}" stroke-width="2"/></g>`;
+    s += qr(window.dayUrl(d), 238, 286, 66, "#12082A", "#fff") + `</g>`;
+    return svg(s, `Наклейка «Неон», день ${d}: ${th.topic}`);
+  }
+
   window.STICKER_SIZE = { W, H, mm: [80, 95] };
   window.STICKER_INTERNALS = { PAPER, ARCH, garland, renderPaperHybrid };
   window.STICKER_STYLES = [
     { id: "paper", name: "Бумага", render: renderPaper },
-    { id: "aqua", name: "Акварель", render: renderAqua }
+    { id: "aqua", name: "Акварель", render: renderAqua },
+    // молодёжные стили — по 3 примера (дни 1–3)
+    { id: "comic", name: "Комикс", render: renderComic, youth: true, days: 3 },
+    { id: "pixel", name: "Пиксель", render: renderPixel, youth: true, days: 3 },
+    { id: "neon", name: "Неон", render: renderNeon, youth: true, days: 3 }
   ];
 })();
