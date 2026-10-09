@@ -147,3 +147,10 @@ footer { padding: 40px 0 56px; border-top: 1px solid var(--line); color: var(--r
 .videos figure { margin: 0; scroll-snap-align: start; }
 .videos video { width: 100%; aspect-ratio: 9 / 16; display: block; border-radius: 10px; background: #000; box-shadow: 0 14px 30px -18px rgba(30, 15, 5, .55); }
 .videos figcaption { font: 400 12px var(--mono); color: var(--roast-soft); margin-top: 10px; }
+
+/* ── ещё 10 стилей ── */
+.more-head { display: grid; gap: 4px 20px; margin-bottom: 16px; }
+@media (min-width: 900px) { .more-head { grid-template-columns: 44px 220px 1fr; align-items: baseline; } }
+.more-head h3 { font-size: 34px; line-height: 1; }
+.more-head p { margin: 0; color: var(--roast-soft); }
+.more .strip { grid-auto-columns: minmax(200px, 280px); }

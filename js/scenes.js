@@ -17,7 +17,7 @@
   function person(x, y, h, o) {
     const k = o.kneel ? .66 : 1, top = y - h * .8 * k, w = h * .42 * (o.kneel ? 1.25 : 1);
     const hr = h * .105, hy = top - hr * .72, it = [];
-    if (o.halo) it.push(F(circle(x, hy, hr * 1.75), o.halo, { fine: 1, w: "paper" }));
+    if (o.halo) it.push(F(circle(x, hy, hr * 1.75), o.halo, { fine: 1, w: "paper", glow: 1 }));
     if (o.wings) {
       const wing = s => `M${f(x + s * w * .08)},${f(top + h * .06)} C${f(x + s * w * 1.15)},${f(top - h * .42)} ${f(x + s * w * 1.35)},${f(top + h * .3)} ${f(x + s * w * .32)},${f(top + h * .48)}Z`;
       it.push(F(wing(-1), o.wings, { ink: 1 }), F(wing(1), o.wings, { ink: 1 }));
@@ -48,10 +48,10 @@
 
   // Вифлеемская звезда с длинным нижним лучом
   const bigStar = (x, y, r, c) => [
-    F(`M${f(x)},${f(y - r)} Q${f(x + r * .12)},${f(y - r * .12)} ${f(x + r * .7)},${f(y)} Q${f(x + r * .12)},${f(y + r * .12)} ${f(x)},${f(y + r * 2.3)} Q${f(x - r * .12)},${f(y + r * .12)} ${f(x - r * .7)},${f(y)} Q${f(x - r * .12)},${f(y - r * .12)} ${f(x)},${f(y - r)}Z`, c, { w: "paper", ink: 1 }),
-    F(`M${f(x)},${f(y - r * .5)} L${f(x + r * .5)},${f(y)} L${f(x)},${f(y + r * .5)} L${f(x - r * .5)},${f(y)}Z`, c, { w: "paper", fine: 1 })
+    F(`M${f(x)},${f(y - r)} Q${f(x + r * .12)},${f(y - r * .12)} ${f(x + r * .7)},${f(y)} Q${f(x + r * .12)},${f(y + r * .12)} ${f(x)},${f(y + r * 2.3)} Q${f(x - r * .12)},${f(y + r * .12)} ${f(x - r * .7)},${f(y)} Q${f(x - r * .12)},${f(y - r * .12)} ${f(x)},${f(y - r)}Z`, c, { w: "paper", ink: 1, glow: 1 }),
+    F(`M${f(x)},${f(y - r * .5)} L${f(x + r * .5)},${f(y)} L${f(x)},${f(y + r * .5)} L${f(x - r * .5)},${f(y)}Z`, c, { w: "paper", fine: 1, glow: 1 })
   ];
-  const tinyStars = (pts, c = "#F6E7C1") => pts.map(([x, y, r]) => F(`M${x},${y - r} L${x + r * .3},${y} L${x},${y + r} L${x - r * .3},${y}Z M${x - r},${y} L${x},${y - r * .3} L${x + r},${y} L${x},${y + r * .3}Z`, c, { w: "paper", fine: 1 }));
+  const tinyStars = (pts, c = "#F6E7C1") => pts.map(([x, y, r]) => F(`M${x},${y - r} L${x + r * .3},${y} L${x},${y + r} L${x - r * .3},${y}Z M${x - r},${y} L${x},${y - r * .3} L${x + r},${y} L${x},${y + r * .3}Z`, c, { w: "paper", fine: 1, glow: 1 }));
   const snow = (n, seedN, y0, y1, c = "#FFFFFF") => {
     let a = seedN; const R = () => (a = (a * 16807) % 2147483647) / 2147483647;
     return Array.from({ length: n }, () => F(circle(10 + R() * 300, y0 + R() * (y1 - y0), .8 + R() * 1.6), c, { w: "paper", fine: 1 }));
@@ -85,9 +85,9 @@
         [F(rect(126, 206, 68, 40), "#A88B6A", { ink: 1 }), S("M126,219 H194 M126,232 H194 M146,206 V219 M172,219 V232 M150,232 V246", "#8A6E50", 1.2, { only: "paper" }),
           F(ellipse(160, 206, 36, 8), "#BFA27F", { ink: 1 }), F(ellipse(160, 206, 28, 5), "#3E2A1C", { fine: 1 })],
         // живая вода: светлый фонтан и капли
-        [F("M156,205 Q154,182 160,160 Q166,182 164,205Z", "#BFE3EE", { w: "paper", ink: 1 }),
-          F("M160,160 Q138,158 132,194 Q141,170 160,167Z", "#BFE3EE", { w: "paper", ink: 1, fine: 1 }), F("M160,160 Q182,158 188,194 Q179,170 160,167Z", "#BFE3EE", { w: "paper", ink: 1, fine: 1 }),
-          ...[[140, 170, 3], [182, 166, 3.4], [150, 146, 2.4], [172, 142, 2.2], [132, 186, 2.4], [190, 184, 2.6]].map(([x, y, r]) => F(circle(x, y, r), "#D6EEF4", { w: "paper", fine: 1 }))],
+        [F("M156,205 Q154,182 160,160 Q166,182 164,205Z", "#BFE3EE", { w: "paper", ink: 1, glow: 1 }),
+          F("M160,160 Q138,158 132,194 Q141,170 160,167Z", "#BFE3EE", { w: "paper", ink: 1, fine: 1, glow: 1 }), F("M160,160 Q182,158 188,194 Q179,170 160,167Z", "#BFE3EE", { w: "paper", ink: 1, fine: 1, glow: 1 }),
+          ...[[140, 170, 3], [182, 166, 3.4], [150, 146, 2.4], [172, 142, 2.2], [132, 186, 2.4], [190, 184, 2.6]].map(([x, y, r]) => F(circle(x, y, r), "#D6EEF4", { w: "paper", fine: 1, glow: 1 }))],
         [...person(86, 254, 96, { robe: "#B5545E", cloth: "#E8D6B8", look: 1, hands: [[.38, .34]] }),
           F("M108,206 c-6,0 -9,6 -8,12 c1,8 4,14 10,16 c6,-2 9,-8 10,-16 c1,-6 -2,-12 -8,-12 l0,-5 h-4Z", "#B86A3C", { ink: 1 })],
         [...person(236, 254, 104, { robe: "#F1E6D3", mantle: "#3E6C9A", hair: "#4A2E1C", skin: SKIN2, hands: [[-.5, .3]] })]
@@ -102,7 +102,7 @@
         [...tinyStars([[40, 60, 3], [74, 34, 2.4], [262, 44, 3], [288, 96, 2.2], [30, 126, 2], [246, 140, 2]])],
         [F(circle(160, 96, 150), "#27305A", { only: "paper" })],
         [F(circle(160, 96, 108), "#3A4678", { only: "paper" })],
-        [F(circle(160, 96, 74), "#E8D8A6", { w: "paper", o: .5 })],
+        [F(circle(160, 96, 74), "#E8D8A6", { w: "paper", o: .5, glow: 1 })],
         [F(circle(160, 96, 52), "#F5EAC6", { only: "paper" })],
         [...person(160, 150, 92, { robe: "#FFFDF6", wings: "#EFE7D2", halo: "#E2B04A", hair: "#E2B04A", skin: "#E0B088", hands: [[-.55, -.08], [.55, -.08]] })],
         [F("M0,196 C70,178 130,186 180,192 C240,198 280,182 320,186 V270 H0Z", "#2D3B34")],
@@ -122,12 +122,12 @@
         [F("M162,224 V100 A50,50 0 0 1 262,100 V224Z", "#2E4B79", { w: 3, o: .85 }), ...tinyStars([[236, 92, 3], [190, 128, 2], [244, 160, 2.2]]),
           S("M212,52 V224 M162,150 H262", "#C7B08E", 5, { only: "paper" })],
         // луч света от голубя к Марии
-        [F("M196,84 L60,206 L132,232 Z", "#F7E7BC", { w: "paper", o: .6 })],
+        [F("M196,84 L60,206 L132,232 Z", "#F7E7BC", { w: "paper", o: .6, glow: 1 })],
         [...dove(196, 86, .7)],
         [F("M0,232 H320 V270 H0Z", "#B88E62"), S("M0,248 H320 M60,232 L40,270 M140,232 L134,270 M220,232 L228,270", "#A47A50", 1.2, { only: "paper" })],
         [F(rect(250, 190, 26, 42), "#B86A3C", { ink: 1 }), S("M263,190 C262,170 266,150 263,120", "#5C7A3A", 2, { ink: 1 }),
           ...[[263, 118, -20], [256, 134, -60], [271, 140, 40]].map(([x, y, a]) => F(`M${x},${y} q-5,-10 0,-18 q5,8 0,18Z`, "#FBF6EC", { w: "paper", ink: 1, fine: 1 }))],
-        [F(rect(286, 206, 9, 26), "#F3EAD8", { ink: 1, fine: 1, w: "paper" }), F("M290.5,192 q6,8 0,13 q-6,-5 0,-13Z", "#F4C55A", { fine: 1, ink: 1, w: 1 })],
+        [F(rect(286, 206, 9, 26), "#F3EAD8", { ink: 1, fine: 1, w: "paper" }), F("M290.5,192 q6,8 0,13 q-6,-5 0,-13Z", "#F4C55A", { fine: 1, ink: 1, w: 1, glow: 1 })],
         [...person(100, 256, 136, { robe: "#E9DCC4", cloth: "#3E6C9A", look: 1, kneel: 1, hands: [[.12, .28]] })]
       ]
     }),

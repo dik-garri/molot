@@ -69,7 +69,7 @@
   const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
   let n = 0;
   // Делает id внутри SVG уникальными, когда одна наклейка встречается на странице несколько раз
-  const uniq = s => { const p = "u" + (n++); return s.replace(/\b(pa|wa|co|px|ne|an|fl)(\d+)-/g, `$1$2${p}-`); };
+  const uniq = s => { const p = "u" + (n++); return s.replace(/\b(pa|wa|co|px|ne|an|fl|bp|cs|mo|ri|ad|sg|ch|mc|si|cl)(\d+)-/g, `$1$2${p}-`); };
   const styleById = id => STICKER_STYLES.find(s => s.id === id);
 
   // коробка
@@ -102,7 +102,12 @@
       <div class="strip">${THEMES.slice(0, st.days || 5).map(t => `<figure>${uniq(st.render(t))}<figcaption>${t.day} · ${esc(t.topic)}</figcaption></figure>`).join("")}</div>
     </article>`;
   };
-  document.getElementById("directions").innerHTML = STICKER_STYLES.filter(st => !st.youth && !st.illus).map(dirHtml).join("");
+  document.getElementById("directions").innerHTML = STICKER_STYLES.filter(st => !st.youth && !st.illus && !st.extra).map(dirHtml).join("");
+  document.getElementById("more-styles").innerHTML = STICKER_STYLES.filter(st => st.extra).map((st, i) => `
+    <article class="direction more-item" id="dir-${st.id}">
+      <div class="more-head"><span class="eyebrow">${String(i + 1).padStart(2, "0")}</span><h3>${st.name}</h3><p>${esc(st.desc)}</p></div>
+      <div class="strip">${THEMES.slice(0, st.days).map(t => `<figure>${uniq(st.render(t))}<figcaption>${t.day} · ${esc(t.topic)}</figcaption></figure>`).join("")}</div>
+    </article>`).join("");
   document.getElementById("illus-directions").innerHTML = STICKER_STYLES.filter(st => st.illus).map(dirHtml).join("");
   document.getElementById("youth-directions").innerHTML = STICKER_STYLES.filter(st => st.youth).map(dirHtml).join("");
 
