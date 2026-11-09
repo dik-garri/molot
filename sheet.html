@@ -9,9 +9,9 @@
   .row svg{width:320px;height:380px;display:block;box-shadow:0 6px 18px rgba(0,0,0,.25)}
 </style></head><body>
 <div id="out"></div>
-<script src="vendor/qrcode.js?v=19"></script><script src="js/data.js?v=19"></script><script src="js/demo.js?v=19"></script><script src="js/scenes.js?v=19"></script><script src="js/stickers.js?v=19"></script><script src="js/illus.js?v=19"></script><script src="js/styles10.js?v=19"></script>
+<script src="vendor/qrcode.js?v=21"></script><script src="js/data.js?v=21"></script><script src="js/demo.js?v=21"></script><script src="js/scenes.js?v=21"></script><script src="js/stickers.js?v=21"></script><script src="js/illus.js?v=21"></script><script src="js/styles10.js?v=21"></script>
 <script>
 document.fonts.ready.then(()=>{});
 const out=document.getElementById('out');
-for(const st of STICKER_STYLES){const r=document.createElement('div');r.className='row';r.innerHTML=DEMO_THEMES.slice(0,st.days||5).map(t=>st.render(t)).join('');out.appendChild(r);}
+for(const st of STICKER_STYLES.filter(s=>!s.current)){const r=document.createElement('div');r.className='row';r.innerHTML=DEMO_THEMES.slice(0,st.days||5).map(t=>st.render(t)).join('');out.appendChild(r);}
 </script></body></html>

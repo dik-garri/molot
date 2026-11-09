@@ -158,7 +158,10 @@ footer { padding: 40px 0 56px; border-top: 1px solid var(--line); color: var(--r
 /* ── карточка дня: Писание + молитва ── */
 .theme .pray { display: grid; gap: 8px; padding: 14px 16px; border-radius: 10px; background: var(--bean); }
 .theme .pray .eyebrow { color: var(--crema); }
-.theme .pray p { font-size: 15.5px; line-height: 1.5; }
+.theme .pray ul { margin: 0 0 6px; padding-left: 1.1em; }
+.theme .pray li { margin: 0 0 5px; font-size: 15px; line-height: 1.45; }
+.theme .pray li::marker { color: var(--crema); }
 .theme .foot { margin-top: auto; display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font: 400 12px var(--mono); color: var(--roast-soft); }
 .theme .foot .open { margin-top: 0; }
 .theme header .d { min-width: 3.6em; }
+.theme .card-art svg { display: block; width: 100%; max-width: 240px; height: auto; margin: 2px auto 4px; border-radius: 4px; box-shadow: 0 12px 26px -16px rgba(30, 15, 5, .55); }

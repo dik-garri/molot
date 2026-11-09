@@ -69,12 +69,14 @@
   const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
   let n = 0;
   // Делает id внутри SVG уникальными, когда одна наклейка встречается на странице несколько раз
-  const uniq = s => { const p = "u" + (n++); return s.replace(/\b(pa|wa|co|px|ne|an|fl|bp|cs|mo|ri|ad|sg|ch|mc|si|cl)(\d+)-/g, `$1$2${p}-`); };
+  const uniq = s => { const p = "u" + (n++); return s.replace(/\b(pa|wa|co|px|ne|an|fl|bp|cs|mo|ri|ad|sg|ch|mc|si|cl|kf)(\d+)-/g, `$1$2${p}-`); };
   const styleById = id => STICKER_STYLES.find(s => s.id === id);
 
   // коробка: 24 ячейки с темами (картинки появятся после утверждения стиля)
+  // выбранный стиль тиража — «Акварель кофе», рисуется по актуальным темам
+  const coffee = styleById("coffee");
   document.getElementById("slots").innerHTML = THEMES.map(t =>
-    `<a class="slot${t.day === 24 ? " gift" : ""}" href="#day-${t.day}"><span class="n">${t.day}</span><span class="t">${esc(t.sticker.join(" "))}</span></a>`).join("");
+    `<a class="slot has-art" href="#day-${t.day}" aria-label="День ${t.day}: ${esc(t.topic)}">${uniq(coffee.render(t))}</a>`).join("");
 
   // образцы наклеек нарисованы на темы первой версии (DEMO_THEMES)
   document.getElementById("drip-sticker").innerHTML = uniq(styleById("paper").render(DEMO_THEMES[0]));
@@ -92,7 +94,7 @@
       <div class="strip">${DEMO_THEMES.slice(0, st.days || 5).map(t => `<figure>${uniq(st.render(t))}<figcaption>${t.day} · ${esc(t.topic)}</figcaption></figure>`).join("")}</div>
     </article>`;
   };
-  document.getElementById("directions").innerHTML = STICKER_STYLES.filter(st => !st.youth && !st.illus && !st.extra).map(dirHtml).join("");
+  document.getElementById("directions").innerHTML = STICKER_STYLES.filter(st => !st.youth && !st.illus && !st.extra && !st.current).map(dirHtml).join("");
   document.getElementById("more-styles").innerHTML = STICKER_STYLES.filter(st => st.extra).map((st, i) => `
     <article class="direction more-item" id="dir-${st.id}">
       <div class="more-head"><span class="eyebrow">${String(i + 1).padStart(2, "0")}</span><h3>${st.name}</h3><p>${esc(st.desc)}</p></div>
@@ -103,13 +105,14 @@
 
   // темы
   // время чтения вслух: Писание + молитва, 130 слов в минуту
-  const readSec = t => Math.round([t.topic, ...t.verses.map(v => v.ref + " " + v.text), ...t.prayer].join(" ").split(/\s+/).filter(w => /[А-Яа-яЁё0-9]/.test(w)).length / 130 * 60);
+  const readSec = t => Math.round([t.topic, ...t.verses.map(v => v.ref + " " + v.text), ...t.thanks].join(" ").split(/\s+/).filter(w => /[А-Яа-яЁё0-9]/.test(w)).length / 130 * 60);
   document.getElementById("theme-list").innerHTML = THEMES.map(t => `
     <article class="theme" id="day-${t.day}">
       <header><span class="d">${t.day} дек</span><h3>${esc(t.topic)}</h3></header>
+      <div class="card-art">${uniq(coffee.render(t))}</div>
       <div class="say">На наклейке: <b>${esc(THANKS)} ${esc(t.sticker.join(" "))}</b></div>
       ${t.verses.map(v => `<blockquote>${esc(v.text)}<cite>${esc(v.ref)}</cite></blockquote>`).join("")}
-      <div class="pray"><span class="eyebrow">Молитва благодарности</span>${t.prayer.map(p => `<p>${esc(p)}</p>`).join("")}</div>
+      <div class="pray"><span class="eyebrow">Благодарность</span><ul>${t.thanks.map(p => `<li>${esc(p)}</li>`).join("")}</ul></div>
       <div class="foot"><span>чтение ≈ ${readSec(t)} с</span><a class="open" href="day.html?d=${t.day}">Страница дня →</a></div>
     </article>`).join("");
 })();
