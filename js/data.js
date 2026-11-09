@@ -315,5 +315,6 @@ window.THEMES = [
   }
 ];
 
-window.SITE_BASE = "https://dik-garri.github.io/molot/";
-window.dayUrl = d => window.SITE_BASE + "day.html?d=" + d;
+// QR ведёт на goodnews.kg/dd/advent/N — туда страницы дня выкладывает tools/build-goodnews.sh
+window.SITE_BASE = "https://goodnews.kg/dd/advent/";
+window.dayUrl = d => window.SITE_BASE + d;
