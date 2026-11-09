@@ -1,4 +1,5 @@
-// Покадровый рендер видео: node render.mjs <story> [--fps 30] [--scale 2]
+// Покадровый рендер видео: node render.mjs <имя> [--fps 30] [--scale 2] [--page explain.html?d=1]
+//   без --page — ролик наклейки по сценарию stories/<имя>.js (player.html); с --page — любая страница с window.VIDEO.
 // Как в anim-kit-studio: страница рисует кадр по t (VIDEO.draw), звук синтезируется офлайн (VIDEO.audio → WAV),
 // кадры и звук склеиваются ffmpeg в MP4 (H.264 + AAC, 9:16).
 import puppeteer from "puppeteer-core";
@@ -10,8 +11,9 @@ import { fileURLToPath, pathToFileURL } from "url";
 const here = path.dirname(fileURLToPath(import.meta.url));
 const args = process.argv.slice(2);
 const story = args[0] || "paper";
-const opt = (k, d) => { const i = args.indexOf("--" + k); return i > 0 ? +args[i + 1] : d; };
-const fps = opt("fps", 30), scale = opt("scale", 2);
+const sopt = (k, d) => { const i = args.indexOf("--" + k); return i > 0 ? args[i + 1] : d; };
+const opt = (k, d) => +sopt(k, d);
+const fps = opt("fps", 30), scale = opt("scale", 2), pageArg = sopt("page", null);
 const out = path.join(here, "out"); fs.mkdirSync(out, { recursive: true });
 
 const browser = await puppeteer.launch({
@@ -20,7 +22,9 @@ const browser = await puppeteer.launch({
 });
 const page = await browser.newPage();
 await page.setViewport({ width: 540, height: 960, deviceScaleFactor: scale });
-const url = pathToFileURL(path.join(here, "player.html")).href + `?story=${story}&render=1&t=0`;
+const url = pageArg
+  ? pathToFileURL(path.join(here, pageArg.split("?")[0])).href + "?" + [pageArg.split("?")[1], "render=1&t=0"].filter(Boolean).join("&")
+  : pathToFileURL(path.join(here, "player.html")).href + `?story=${story}&render=1&t=0`;
 await page.goto(url, { waitUntil: "networkidle0" });
 await page.evaluate(() => window.VIDEO.ready);
 const D = await page.evaluate(() => window.VIDEO.duration);
