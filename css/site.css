@@ -154,3 +154,11 @@ footer { padding: 40px 0 56px; border-top: 1px solid var(--line); color: var(--r
 .more-head h3 { font-size: 34px; line-height: 1; }
 .more-head p { margin: 0; color: var(--roast-soft); }
 .more .strip { grid-auto-columns: minmax(200px, 280px); }
+
+/* ── карточка дня: Писание + молитва ── */
+.theme .pray { display: grid; gap: 8px; padding: 14px 16px; border-radius: 10px; background: var(--bean); }
+.theme .pray .eyebrow { color: var(--crema); }
+.theme .pray p { font-size: 15.5px; line-height: 1.5; }
+.theme .foot { margin-top: auto; display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font: 400 12px var(--mono); color: var(--roast-soft); }
+.theme .foot .open { margin-top: 0; }
+.theme header .d { min-width: 3.6em; }

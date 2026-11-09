@@ -7,7 +7,7 @@
 <meta name="description" content="Адвент-календарь из 24 дрип-пакетов кофе: 24 темы благодарности Богу, стихи в Синодальном переводе и три дизайн-направления наклеек.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Forum&family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Manrope:wght@600;700&family=Unbounded:wght@600;700&family=PT+Serif:ital,wght@0,400;0,700;1,400&family=Yeseva+One&family=Kurale&family=Philosopher:ital,wght@0,400;0,700;1,400&family=Marck+Script&family=Lora:ital,wght@1,400;1,600&family=Rubik:wght@600;800;900&family=Press+Start+2P&family=Pacifico&family=Montserrat:wght@700;800&family=Unbounded:wght@900&family=IBM+Plex+Mono:wght@500;700&family=Caveat:wght@600;700&family=Cormorant+SC:wght@600;700&family=Rubik+Mono+One&family=Poiret+One&family=Playfair+Display:ital,wght@1,700&family=Lobster&family=Oswald:wght@600;700&family=Comfortaa:wght@700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/site.css?v=18">
+<link rel="stylesheet" href="css/site.css?v=19">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cellipse cx='16' cy='16' rx='11' ry='14' fill='%232A1B14' transform='rotate(25 16 16)'/%3E%3Cpath d='M11 6 Q19 16 21 26' stroke='%23D3D0B9' stroke-width='2' fill='none'/%3E%3C/svg%3E">
 </head>
 <body>
@@ -17,7 +17,7 @@
     <div>
       <div class="eyebrow">Адвент-календарь · 24 дрип-пакета кофе</div>
       <h1>Вкусите <em>и&nbsp;увидите</em></h1>
-      <p class="lead">Двадцать четыре дня — двадцать четыре причины поблагодарить Христа за Его приход на землю. На каждом пакете наклейка с темой дня, а QR-код ведёт к стиху и короткому размышлению: как раз на те три минуты, пока заваривается кофе.</p>
+      <p class="lead">Двадцать четыре дня — двадцать четыре причины поблагодарить Христа за Его приход на землю. На каждом пакете наклейка с темой дня, а QR-код ведёт к словам Писания и короткой молитве благодарности — не дольше полутора минут, пока заваривается кофе.</p>
       <div class="ref">«Вкусите, и увидите, как благ Господь!» — Пс 33:9</div>
       <ul class="facts">
         <li><b>24</b> дара Его прихода</li>
@@ -28,11 +28,7 @@
     </div>
     <div class="box" aria-label="Коробка календаря: 24 ячейки">
       <div class="box-top">
-        <span class="eyebrow">Так выглядит коробка</span>
-        <div class="switch" role="group" aria-label="Дизайн-направление в коробке">
-          <button type="button" data-style="paper" aria-pressed="true">Бумага</button>
-          <button type="button" data-style="aqua" aria-pressed="false">Акварель</button>
-        </div>
+        <span class="eyebrow">24 дня · 24 причины</span>
       </div>
       <div class="slots" id="slots"></div>
     </div>
@@ -47,7 +43,7 @@
       <ol>
         <li><div><b>Достать пакет дня</b><span>На наклейке — день, тема в одну строку «Спасибо, Иисус, за…» и ссылка на стих.</span></div></li>
         <li><div><b>Навести камеру на QR</b><span>Код ведёт на страницу дня на вашем сайте. Приложение не нужно.</span></div></li>
-        <li><div><b>Заварить и прочитать</b><span>Стих, 3–5 предложений размышления и одно маленькое действие на сегодня.</span></div></li>
+        <li><div><b>Заварить и прочитать</b><span>Слова Писания и молитва благодарности с просьбой — всё вместе не дольше полутора минут.</span></div></li>
       </ol>
       <div>
         <div class="mock">
@@ -62,7 +58,7 @@
     <div class="section-head">
       <div class="eyebrow">Дизайн · первые пять дней</div>
       <h2>Два направления</h2>
-      <p>В каждой наклейке — тема дня, герои и связь с Рождеством: сюжет из евангельской истории и рождественский декор. Обе версии нарисованы по одной сцене, формат наклейки 80×95 мм, QR-коды рабочие — можно проверить телефоном прямо с экрана.</p>
+      <p>Образцы нарисованы на темы первой версии календаря; рисунки под утверждённый список — после выбора стиля. В каждой наклейке — тема дня, герои и связь с Рождеством: сюжет из евангельской истории и рождественский декор. Обе версии нарисованы по одной сцене, формат наклейки 80×95 мм, QR-коды рабочие — можно проверить телефоном прямо с экрана.</p>
     </div>
     <div id="directions"></div>
   </section>
@@ -110,7 +106,7 @@
     <div class="section-head">
       <div class="eyebrow">Контент · 24 дня</div>
       <h2>За что мы благодарим Христа</h2>
-      <p>Каждый день — один дар, который пришёл к нам вместе с Иисусом: прощение, вечная жизнь, свет, дружба с Богом, новая семья. Темы не повторяют друг друга, а последние дни ведут к Рождеству: Еммануил, обещание вернуться и, наконец, «ныне родился вам Спаситель». Стихи — Синодальный перевод, сверены по двум изданиям.</p>
+      <p>Каждый день — один дар, который пришёл к нам вместе с Иисусом. В карточке — места Писания, которые раскрывают мысль дня, и молитва: благодарность за прочитанное и просьба о помощи. Всё вместе читается меньше чем за полторы минуты. Стихи — Синодальный перевод, сверены по двум изданиям.</p>
     </div>
     <div class="themes" id="theme-list"></div>
   </section>
@@ -183,9 +179,9 @@
   <footer>Концепция для согласования. Стихи: Синодальный перевод. Ссылки в QR-кодах пока ведут на демо-страницы этого сайта.</footer>
 </div>
 
-<script src="vendor/qrcode.js?v=18"></script>
-<script src="js/data.js?v=18"></script>
-<script src="js/scenes.js?v=18"></script><script src="js/stickers.js?v=18"></script><script src="js/illus.js?v=18"></script><script src="js/styles10.js?v=18"></script>
-<script src="js/index.js?v=18"></script>
+<script src="vendor/qrcode.js?v=19"></script>
+<script src="js/data.js?v=19"></script><script src="js/demo.js?v=19"></script>
+<script src="js/scenes.js?v=19"></script><script src="js/stickers.js?v=19"></script><script src="js/illus.js?v=19"></script><script src="js/styles10.js?v=19"></script>
+<script src="js/index.js?v=19"></script>
 </body>
 </html>

@@ -72,22 +72,12 @@
   const uniq = s => { const p = "u" + (n++); return s.replace(/\b(pa|wa|co|px|ne|an|fl|bp|cs|mo|ri|ad|sg|ch|mc|si|cl)(\d+)-/g, `$1$2${p}-`); };
   const styleById = id => STICKER_STYLES.find(s => s.id === id);
 
-  // коробка
-  const slots = document.getElementById("slots");
-  function fillBox(styleId) {
-    const st = styleById(styleId);
-    slots.innerHTML = THEMES.map(t => {
-      if (t.day <= 5) return `<a class="slot has-art" href="#day-${t.day}" aria-label="День ${t.day}: ${esc(t.topic)}">${uniq(st.render(t))}</a>`;
-      return `<a class="slot${t.day === 24 ? " gift" : ""}" href="#day-${t.day}"><span class="n">${t.day}</span><span class="t">${esc(t.topic)}</span></a>`;
-    }).join("");
-  }
-  document.querySelectorAll(".switch button").forEach(b => b.addEventListener("click", () => {
-    document.querySelectorAll(".switch button").forEach(x => x.setAttribute("aria-pressed", x === b));
-    fillBox(b.dataset.style);
-  }));
-  fillBox("paper");
+  // коробка: 24 ячейки с темами (картинки появятся после утверждения стиля)
+  document.getElementById("slots").innerHTML = THEMES.map(t =>
+    `<a class="slot${t.day === 24 ? " gift" : ""}" href="#day-${t.day}"><span class="n">${t.day}</span><span class="t">${esc(t.sticker.join(" "))}</span></a>`).join("");
 
-  document.getElementById("drip-sticker").innerHTML = uniq(styleById("paper").render(THEMES[0]));
+  // образцы наклеек нарисованы на темы первой версии (DEMO_THEMES)
+  document.getElementById("drip-sticker").innerHTML = uniq(styleById("paper").render(DEMO_THEMES[0]));
 
   // направления
   const dirHtml = st => {
@@ -99,28 +89,28 @@
           <dl><dt>Настроение</dt><dd>${D.mood}</dd><dt>Техника</dt><dd>${D.tech}</dd><dt>Сильная сторона</dt><dd>${D.plus}</dd><dt>Риск</dt><dd>${D.risk}</dd></dl>
         </div>
       </div>
-      <div class="strip">${THEMES.slice(0, st.days || 5).map(t => `<figure>${uniq(st.render(t))}<figcaption>${t.day} · ${esc(t.topic)}</figcaption></figure>`).join("")}</div>
+      <div class="strip">${DEMO_THEMES.slice(0, st.days || 5).map(t => `<figure>${uniq(st.render(t))}<figcaption>${t.day} · ${esc(t.topic)}</figcaption></figure>`).join("")}</div>
     </article>`;
   };
   document.getElementById("directions").innerHTML = STICKER_STYLES.filter(st => !st.youth && !st.illus && !st.extra).map(dirHtml).join("");
   document.getElementById("more-styles").innerHTML = STICKER_STYLES.filter(st => st.extra).map((st, i) => `
     <article class="direction more-item" id="dir-${st.id}">
       <div class="more-head"><span class="eyebrow">${String(i + 1).padStart(2, "0")}</span><h3>${st.name}</h3><p>${esc(st.desc)}</p></div>
-      <div class="strip">${THEMES.slice(0, st.days).map(t => `<figure>${uniq(st.render(t))}<figcaption>${t.day} · ${esc(t.topic)}</figcaption></figure>`).join("")}</div>
+      <div class="strip">${DEMO_THEMES.slice(0, st.days).map(t => `<figure>${uniq(st.render(t))}<figcaption>${t.day} · ${esc(t.topic)}</figcaption></figure>`).join("")}</div>
     </article>`).join("");
   document.getElementById("illus-directions").innerHTML = STICKER_STYLES.filter(st => st.illus).map(dirHtml).join("");
   document.getElementById("youth-directions").innerHTML = STICKER_STYLES.filter(st => st.youth).map(dirHtml).join("");
 
   // темы
+  // время чтения вслух: Писание + молитва, 130 слов в минуту
+  const readSec = t => Math.round([t.topic, ...t.verses.map(v => v.ref + " " + v.text), ...t.prayer].join(" ").split(/\s+/).filter(w => /[А-Яа-яЁё0-9]/.test(w)).length / 130 * 60);
   document.getElementById("theme-list").innerHTML = THEMES.map(t => `
     <article class="theme" id="day-${t.day}">
-      <header><span class="d">${String(t.day).padStart(2, "0")}</span><h3>${esc(t.topic)}</h3></header>
+      <header><span class="d">${t.day} дек</span><h3>${esc(t.topic)}</h3></header>
       <div class="say">На наклейке: <b>${esc(THANKS)} ${esc(t.sticker.join(" "))}</b></div>
-      <blockquote>${esc(t.verse)}<cite>${esc(t.ref)}</cite></blockquote>
-      <p>${esc(t.text.join(" "))}</p>
-      <div class="meta"><b>Сегодня:</b> ${esc(t.practice)}</div>
-      <div class="meta"><b>Идея рисунка:</b> ${esc(t.idea)}</div>
-      <a class="open" href="day.html?d=${t.day}">Страница дня →</a>
+      ${t.verses.map(v => `<blockquote>${esc(v.text)}<cite>${esc(v.ref)}</cite></blockquote>`).join("")}
+      <div class="pray"><span class="eyebrow">Молитва благодарности</span>${t.prayer.map(p => `<p>${esc(p)}</p>`).join("")}</div>
+      <div class="foot"><span>чтение ≈ ${readSec(t)} с</span><a class="open" href="day.html?d=${t.day}">Страница дня →</a></div>
     </article>`).join("");
 })();
 
@@ -128,7 +118,7 @@
 (function () {
   const box = document.getElementById("render");
   const H = window.STICKER_INTERNALS.renderPaperHybrid;
-  const flat = STICKER_STYLES.find(s => s.id === "paper").render(THEMES[3]);
+  const flat = STICKER_STYLES.find(s => s.id === "paper").render(DEMO_THEMES[3]);
   const fix = s => s.replace(/\b(pa)(\d+)-/g, (m, a, d) => `${a}${d}r${Math.random().toString(36).slice(2, 6)}-`);
   box.innerHTML = `
     <div>
@@ -139,7 +129,7 @@
     </div>
     <div class="render-pair">
       <figure style="margin:0">${fix(flat)}<figcaption class="cap">SVG, плоский</figcaption></figure>
-      <figure style="margin:0">${fix(H(THEMES[3], "img/render-paper-4.jpg"))}<figcaption class="cap">Blender + вектор</figcaption></figure>
+      <figure style="margin:0">${fix(H(DEMO_THEMES[3], "img/render-paper-4.jpg"))}<figcaption class="cap">Blender + вектор</figcaption></figure>
     </div>`;
   box.querySelectorAll("svg").forEach(s => { s.style.width = "100%"; s.style.height = "auto"; s.style.display = "block"; s.style.borderRadius = "6px"; s.style.boxShadow = "0 20px 40px -24px rgba(30,15,5,.6)"; });
   box.hidden = false;

@@ -4,7 +4,7 @@
    рендерить покадрово (render.mjs) и всегда получать одно и то же. ?t=5 — показать один кадр. */
 (() => {
   "use strict";
-  const S = window.STORY, D = S.duration, th = THEMES[S.day - 1];
+  const S = window.STORY, D = S.duration, th = DEMO_THEMES[S.day - 1];   // видео сняты на темы первой версии
   const style = STICKER_STYLES.find(s => s.id === S.style);
   const $ = id => document.getElementById(id);
 
